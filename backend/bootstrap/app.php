@@ -35,6 +35,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Unauthenticated.',
                 ], 401);
             }
-            return redirect()->route('login');
+            return redirect('/');
         });
     })->create();
