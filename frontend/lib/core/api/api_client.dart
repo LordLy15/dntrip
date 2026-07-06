@@ -54,6 +54,18 @@ class ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> put(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final response = await _dio.put(path, data: data);
+      return _handleResponse(response);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
   Map<String, dynamic> _handleResponse(Response response) {
     final data = response.data;
     if (data is Map<String, dynamic>) {

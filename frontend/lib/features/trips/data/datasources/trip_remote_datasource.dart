@@ -91,7 +91,7 @@ class TripRemoteDatasource {
     if (latitude != null) data['latitude'] = latitude;
     if (longitude != null) data['longitude'] = longitude;
 
-    final response = await _apiClient.post('/trips/$id', data: data);
+    final response = await _apiClient.put('/trips/$id', data: data);
     final responseData = response['data'] as Map<String, dynamic>?;
     final tripData = responseData?['trip'] as Map<String, dynamic>?;
 
