@@ -9,7 +9,7 @@ class TripDayModel with _$TripDayModel {
   const factory TripDayModel({
     required int id,
     required int dayNumber,
-    required String date,
+    String? date,
     String? notes,
     @Default([]) List<ActivityModel> activities,
   }) = _TripDayModel;

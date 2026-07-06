@@ -21,16 +21,21 @@ TripModel _$TripModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TripModel {
   int get id => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   String? get destination => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get startDate => throw _privateConstructorUsedError;
   String? get endDate => throw _privateConstructorUsedError;
-  String get shareCode => throw _privateConstructorUsedError;
-  String get status => throw _privateConstructorUsedError;
-  UserModel get owner => throw _privateConstructorUsedError;
+  String? get shareCode => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
+  TripOwner get owner => throw _privateConstructorUsedError;
   List<TripMemberModel> get members => throw _privateConstructorUsedError;
   int? get membersCount => throw _privateConstructorUsedError;
+  int? get planBudget => throw _privateConstructorUsedError;
+  String? get latitude => throw _privateConstructorUsedError;
+  String? get longitude => throw _privateConstructorUsedError;
+  String? get actualStartTime => throw _privateConstructorUsedError;
+  String? get actualEndTime => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,18 +50,23 @@ abstract class $TripModelCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      String title,
+      String? title,
       String? destination,
       String? description,
       String? startDate,
       String? endDate,
-      String shareCode,
-      String status,
-      UserModel owner,
+      String? shareCode,
+      String? status,
+      TripOwner owner,
       List<TripMemberModel> members,
-      int? membersCount});
+      int? membersCount,
+      int? planBudget,
+      String? latitude,
+      String? longitude,
+      String? actualStartTime,
+      String? actualEndTime});
 
-  $UserModelCopyWith<$Res> get owner;
+  $TripOwnerCopyWith<$Res> get owner;
 }
 
 /// @nodoc
@@ -73,26 +83,31 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
   @override
   $Res call({
     Object? id = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? destination = freezed,
     Object? description = freezed,
     Object? startDate = freezed,
     Object? endDate = freezed,
-    Object? shareCode = null,
-    Object? status = null,
+    Object? shareCode = freezed,
+    Object? status = freezed,
     Object? owner = null,
     Object? members = null,
     Object? membersCount = freezed,
+    Object? planBudget = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
+    Object? actualStartTime = freezed,
+    Object? actualEndTime = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       destination: freezed == destination
           ? _value.destination
           : destination // ignore: cast_nullable_to_non_nullable
@@ -109,18 +124,18 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as String?,
-      shareCode: null == shareCode
+      shareCode: freezed == shareCode
           ? _value.shareCode
           : shareCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      status: null == status
+              as String?,
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       owner: null == owner
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
-              as UserModel,
+              as TripOwner,
       members: null == members
           ? _value.members
           : members // ignore: cast_nullable_to_non_nullable
@@ -129,13 +144,33 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
           ? _value.membersCount
           : membersCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      planBudget: freezed == planBudget
+          ? _value.planBudget
+          : planBudget // ignore: cast_nullable_to_non_nullable
+              as int?,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as String?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as String?,
+      actualStartTime: freezed == actualStartTime
+          ? _value.actualStartTime
+          : actualStartTime // ignore: cast_nullable_to_non_nullable
+              as String?,
+      actualEndTime: freezed == actualEndTime
+          ? _value.actualEndTime
+          : actualEndTime // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $UserModelCopyWith<$Res> get owner {
-    return $UserModelCopyWith<$Res>(_value.owner, (value) {
+  $TripOwnerCopyWith<$Res> get owner {
+    return $TripOwnerCopyWith<$Res>(_value.owner, (value) {
       return _then(_value.copyWith(owner: value) as $Val);
     });
   }
@@ -151,19 +186,24 @@ abstract class _$$TripModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
-      String title,
+      String? title,
       String? destination,
       String? description,
       String? startDate,
       String? endDate,
-      String shareCode,
-      String status,
-      UserModel owner,
+      String? shareCode,
+      String? status,
+      TripOwner owner,
       List<TripMemberModel> members,
-      int? membersCount});
+      int? membersCount,
+      int? planBudget,
+      String? latitude,
+      String? longitude,
+      String? actualStartTime,
+      String? actualEndTime});
 
   @override
-  $UserModelCopyWith<$Res> get owner;
+  $TripOwnerCopyWith<$Res> get owner;
 }
 
 /// @nodoc
@@ -178,26 +218,31 @@ class __$$TripModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? destination = freezed,
     Object? description = freezed,
     Object? startDate = freezed,
     Object? endDate = freezed,
-    Object? shareCode = null,
-    Object? status = null,
+    Object? shareCode = freezed,
+    Object? status = freezed,
     Object? owner = null,
     Object? members = null,
     Object? membersCount = freezed,
+    Object? planBudget = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
+    Object? actualStartTime = freezed,
+    Object? actualEndTime = freezed,
   }) {
     return _then(_$TripModelImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       destination: freezed == destination
           ? _value.destination
           : destination // ignore: cast_nullable_to_non_nullable
@@ -214,18 +259,18 @@ class __$$TripModelImplCopyWithImpl<$Res>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as String?,
-      shareCode: null == shareCode
+      shareCode: freezed == shareCode
           ? _value.shareCode
           : shareCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      status: null == status
+              as String?,
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       owner: null == owner
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
-              as UserModel,
+              as TripOwner,
       members: null == members
           ? _value._members
           : members // ignore: cast_nullable_to_non_nullable
@@ -234,6 +279,26 @@ class __$$TripModelImplCopyWithImpl<$Res>
           ? _value.membersCount
           : membersCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      planBudget: freezed == planBudget
+          ? _value.planBudget
+          : planBudget // ignore: cast_nullable_to_non_nullable
+              as int?,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as String?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as String?,
+      actualStartTime: freezed == actualStartTime
+          ? _value.actualStartTime
+          : actualStartTime // ignore: cast_nullable_to_non_nullable
+              as String?,
+      actualEndTime: freezed == actualEndTime
+          ? _value.actualEndTime
+          : actualEndTime // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -243,16 +308,21 @@ class __$$TripModelImplCopyWithImpl<$Res>
 class _$TripModelImpl extends _TripModel {
   const _$TripModelImpl(
       {required this.id,
-      required this.title,
+      this.title,
       this.destination,
       this.description,
       this.startDate,
       this.endDate,
-      required this.shareCode,
-      required this.status,
+      this.shareCode,
+      this.status,
       required this.owner,
       final List<TripMemberModel> members = const [],
-      this.membersCount})
+      this.membersCount,
+      this.planBudget,
+      this.latitude,
+      this.longitude,
+      this.actualStartTime,
+      this.actualEndTime})
       : _members = members,
         super._();
 
@@ -262,7 +332,7 @@ class _$TripModelImpl extends _TripModel {
   @override
   final int id;
   @override
-  final String title;
+  final String? title;
   @override
   final String? destination;
   @override
@@ -272,11 +342,11 @@ class _$TripModelImpl extends _TripModel {
   @override
   final String? endDate;
   @override
-  final String shareCode;
+  final String? shareCode;
   @override
-  final String status;
+  final String? status;
   @override
-  final UserModel owner;
+  final TripOwner owner;
   final List<TripMemberModel> _members;
   @override
   @JsonKey()
@@ -288,10 +358,20 @@ class _$TripModelImpl extends _TripModel {
 
   @override
   final int? membersCount;
+  @override
+  final int? planBudget;
+  @override
+  final String? latitude;
+  @override
+  final String? longitude;
+  @override
+  final String? actualStartTime;
+  @override
+  final String? actualEndTime;
 
   @override
   String toString() {
-    return 'TripModel(id: $id, title: $title, destination: $destination, description: $description, startDate: $startDate, endDate: $endDate, shareCode: $shareCode, status: $status, owner: $owner, members: $members, membersCount: $membersCount)';
+    return 'TripModel(id: $id, title: $title, destination: $destination, description: $description, startDate: $startDate, endDate: $endDate, shareCode: $shareCode, status: $status, owner: $owner, members: $members, membersCount: $membersCount, planBudget: $planBudget, latitude: $latitude, longitude: $longitude, actualStartTime: $actualStartTime, actualEndTime: $actualEndTime)';
   }
 
   @override
@@ -314,7 +394,17 @@ class _$TripModelImpl extends _TripModel {
             (identical(other.owner, owner) || other.owner == owner) &&
             const DeepCollectionEquality().equals(other._members, _members) &&
             (identical(other.membersCount, membersCount) ||
-                other.membersCount == membersCount));
+                other.membersCount == membersCount) &&
+            (identical(other.planBudget, planBudget) ||
+                other.planBudget == planBudget) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
+            (identical(other.actualStartTime, actualStartTime) ||
+                other.actualStartTime == actualStartTime) &&
+            (identical(other.actualEndTime, actualEndTime) ||
+                other.actualEndTime == actualEndTime));
   }
 
   @JsonKey(ignore: true)
@@ -331,7 +421,12 @@ class _$TripModelImpl extends _TripModel {
       status,
       owner,
       const DeepCollectionEquality().hash(_members),
-      membersCount);
+      membersCount,
+      planBudget,
+      latitude,
+      longitude,
+      actualStartTime,
+      actualEndTime);
 
   @JsonKey(ignore: true)
   @override
@@ -350,16 +445,21 @@ class _$TripModelImpl extends _TripModel {
 abstract class _TripModel extends TripModel {
   const factory _TripModel(
       {required final int id,
-      required final String title,
+      final String? title,
       final String? destination,
       final String? description,
       final String? startDate,
       final String? endDate,
-      required final String shareCode,
-      required final String status,
-      required final UserModel owner,
+      final String? shareCode,
+      final String? status,
+      required final TripOwner owner,
       final List<TripMemberModel> members,
-      final int? membersCount}) = _$TripModelImpl;
+      final int? membersCount,
+      final int? planBudget,
+      final String? latitude,
+      final String? longitude,
+      final String? actualStartTime,
+      final String? actualEndTime}) = _$TripModelImpl;
   const _TripModel._() : super._();
 
   factory _TripModel.fromJson(Map<String, dynamic> json) =
@@ -368,7 +468,7 @@ abstract class _TripModel extends TripModel {
   @override
   int get id;
   @override
-  String get title;
+  String? get title;
   @override
   String? get destination;
   @override
@@ -378,48 +478,58 @@ abstract class _TripModel extends TripModel {
   @override
   String? get endDate;
   @override
-  String get shareCode;
+  String? get shareCode;
   @override
-  String get status;
+  String? get status;
   @override
-  UserModel get owner;
+  TripOwner get owner;
   @override
   List<TripMemberModel> get members;
   @override
   int? get membersCount;
+  @override
+  int? get planBudget;
+  @override
+  String? get latitude;
+  @override
+  String? get longitude;
+  @override
+  String? get actualStartTime;
+  @override
+  String? get actualEndTime;
   @override
   @JsonKey(ignore: true)
   _$$TripModelImplCopyWith<_$TripModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
-UserModel _$UserModelFromJson(Map<String, dynamic> json) {
-  return _UserModel.fromJson(json);
+TripOwner _$TripOwnerFromJson(Map<String, dynamic> json) {
+  return _TripOwner.fromJson(json);
 }
 
 /// @nodoc
-mixin _$UserModel {
+mixin _$TripOwner {
   int get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $UserModelCopyWith<UserModel> get copyWith =>
+  $TripOwnerCopyWith<TripOwner> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $UserModelCopyWith<$Res> {
-  factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) then) =
-      _$UserModelCopyWithImpl<$Res, UserModel>;
+abstract class $TripOwnerCopyWith<$Res> {
+  factory $TripOwnerCopyWith(TripOwner value, $Res Function(TripOwner) then) =
+      _$TripOwnerCopyWithImpl<$Res, TripOwner>;
   @useResult
-  $Res call({int id, String name});
+  $Res call({int id, String? name});
 }
 
 /// @nodoc
-class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
-    implements $UserModelCopyWith<$Res> {
-  _$UserModelCopyWithImpl(this._value, this._then);
+class _$TripOwnerCopyWithImpl<$Res, $Val extends TripOwner>
+    implements $TripOwnerCopyWith<$Res> {
+  _$TripOwnerCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -430,82 +540,82 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
+    Object? name = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$UserModelImplCopyWith<$Res>
-    implements $UserModelCopyWith<$Res> {
-  factory _$$UserModelImplCopyWith(
-          _$UserModelImpl value, $Res Function(_$UserModelImpl) then) =
-      __$$UserModelImplCopyWithImpl<$Res>;
+abstract class _$$TripOwnerImplCopyWith<$Res>
+    implements $TripOwnerCopyWith<$Res> {
+  factory _$$TripOwnerImplCopyWith(
+          _$TripOwnerImpl value, $Res Function(_$TripOwnerImpl) then) =
+      __$$TripOwnerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name});
+  $Res call({int id, String? name});
 }
 
 /// @nodoc
-class __$$UserModelImplCopyWithImpl<$Res>
-    extends _$UserModelCopyWithImpl<$Res, _$UserModelImpl>
-    implements _$$UserModelImplCopyWith<$Res> {
-  __$$UserModelImplCopyWithImpl(
-      _$UserModelImpl _value, $Res Function(_$UserModelImpl) _then)
+class __$$TripOwnerImplCopyWithImpl<$Res>
+    extends _$TripOwnerCopyWithImpl<$Res, _$TripOwnerImpl>
+    implements _$$TripOwnerImplCopyWith<$Res> {
+  __$$TripOwnerImplCopyWithImpl(
+      _$TripOwnerImpl _value, $Res Function(_$TripOwnerImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
+    Object? name = freezed,
   }) {
-    return _then(_$UserModelImpl(
+    return _then(_$TripOwnerImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$UserModelImpl implements _UserModel {
-  const _$UserModelImpl({required this.id, required this.name});
+class _$TripOwnerImpl implements _TripOwner {
+  const _$TripOwnerImpl({required this.id, this.name});
 
-  factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserModelImplFromJson(json);
+  factory _$TripOwnerImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TripOwnerImplFromJson(json);
 
   @override
   final int id;
   @override
-  final String name;
+  final String? name;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name)';
+    return 'TripOwner(id: $id, name: $name)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UserModelImpl &&
+            other is _$TripOwnerImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name));
   }
@@ -517,30 +627,30 @@ class _$UserModelImpl implements _UserModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
-      __$$UserModelImplCopyWithImpl<_$UserModelImpl>(this, _$identity);
+  _$$TripOwnerImplCopyWith<_$TripOwnerImpl> get copyWith =>
+      __$$TripOwnerImplCopyWithImpl<_$TripOwnerImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserModelImplToJson(
+    return _$$TripOwnerImplToJson(
       this,
     );
   }
 }
 
-abstract class _UserModel implements UserModel {
-  const factory _UserModel(
-      {required final int id, required final String name}) = _$UserModelImpl;
+abstract class _TripOwner implements TripOwner {
+  const factory _TripOwner({required final int id, final String? name}) =
+      _$TripOwnerImpl;
 
-  factory _UserModel.fromJson(Map<String, dynamic> json) =
-      _$UserModelImpl.fromJson;
+  factory _TripOwner.fromJson(Map<String, dynamic> json) =
+      _$TripOwnerImpl.fromJson;
 
   @override
   int get id;
   @override
-  String get name;
+  String? get name;
   @override
   @JsonKey(ignore: true)
-  _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
+  _$$TripOwnerImplCopyWith<_$TripOwnerImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

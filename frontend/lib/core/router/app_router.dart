@@ -10,6 +10,7 @@ import '../../features/trips/presentation/screens/trip_form_screen.dart';
 import '../../features/trips/presentation/screens/join_trip_screen.dart';
 import '../../features/itinerary/presentation/screens/itinerary_screen.dart';
 import '../../features/itinerary/presentation/screens/activity_form_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/itinerary/domain/itinerary_providers.dart';
 import '../../features/itinerary/data/models/trip_day_model.dart';
 
@@ -23,11 +24,13 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(path: '/home', builder: (_, __) => const TripsListScreen()),
       GoRoute(path: '/trips', builder: (_, __) => const TripsListScreen()),
       GoRoute(path: '/trips/new', builder: (_, __) => const TripFormScreen()),
       GoRoute(path: '/trips/:id', builder: (_, state) => TripDetailScreen(tripId: int.parse(state.pathParameters['id']!))),
       GoRoute(path: '/trips/:id/edit', builder: (_, state) => TripFormScreen(tripId: int.parse(state.pathParameters['id']!))),
       GoRoute(path: '/join', builder: (_, __) => const JoinTripScreen()),
+      GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(
         path: '/trips/:id/itinerary',
         builder: (context, state) => ItineraryScreen(

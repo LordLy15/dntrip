@@ -1,3 +1,13 @@
+# Task 9: Sudden Expense Sheet
+
+## Overview
+Create the bottom sheet widget for adding sudden expenses with category dropdown and over-budget warning.
+
+## Files to Create
+
+### Create: `frontend/lib/features/itinerary/presentation/widgets/sudden_expense_sheet.dart`
+
+```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +36,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _newCategoryController = TextEditingController();
-
+  
   ExpenseCategory? _selectedCategory;
   bool _isAddingNewCategory = false;
   bool _isLoading = false;
@@ -43,7 +53,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(expenseCategoriesProvider);
-
+    
     return Container(
       padding: EdgeInsets.only(
         left: 16,
@@ -69,7 +79,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                 ],
               ),
               const SizedBox(height: 16),
-
+              
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -80,14 +90,14 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                 validator: (v) => v?.isEmpty ?? true ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
-
+              
               categoriesAsync.when(
                 data: (categories) {
                   final allCategories = [
                     ...ExpenseCategory.defaultCategories,
                     ...categories.where((c) => c.isCustom),
                   ];
-
+                  
                   return Column(
                     children: [
                       if (!_isAddingNewCategory)
@@ -143,8 +153,8 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                               },
                             ),
                           ),
-                          validator: (v) => v?.isEmpty ?? true
-                              ? 'Wajib diisi'
+                          validator: (v) => v?.isEmpty ?? true 
+                              ? 'Wajib diisi' 
                               : null,
                         ),
                     ],
@@ -154,7 +164,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                 error: (_, __) => const Text('Gagal memuat kategori'),
               ),
               const SizedBox(height: 12),
-
+              
               TextFormField(
                 controller: _amountController,
                 decoration: const InputDecoration(
@@ -171,7 +181,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                 },
               ),
               const SizedBox(height: 12),
-
+              
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
@@ -182,7 +192,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
-
+              
               Row(
                 children: [
                   Expanded(
@@ -215,28 +225,21 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'hotel':
-        return Icons.hotel;
-      case 'directions_car':
-        return Icons.directions_car;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'attractions':
-        return Icons.attractions;
-      case 'schedule':
-        return Icons.schedule;
-      case 'phone':
-        return Icons.phone;
-      default:
-        return Icons.category;
+      case 'hotel': return Icons.hotel;
+      case 'directions_car': return Icons.directions_car;
+      case 'restaurant': return Icons.restaurant;
+      case 'attractions': return Icons.attractions;
+      case 'schedule': return Icons.schedule;
+      case 'phone': return Icons.phone;
+      default: return Icons.category;
     }
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-
+    
     final amount = double.parse(_amountController.text);
-
+    
     // Check over-budget warning
     if (widget.planBudget != null && widget.currentTotal != null) {
       final newTotal = widget.currentTotal! + amount;
@@ -247,30 +250,30 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
         if (!proceed) return;
       }
     }
-
+    
     setState(() => _isLoading = true);
-
+    
     try {
       final notifier = ref.read(suddenExpenseNotifierProvider(widget.tripId).notifier);
-
+      
       // Create custom category if needed
       int? categoryId = _selectedCategory?.id;
       if (_isAddingNewCategory) {
         final category = await ref.read(customCategoryProvider(
-          categoryName: _newCategoryController.text,
+          name: _newCategoryController.text,
         ).future);
         categoryId = category.id;
       }
-
+      
       await notifier.addExpense(
         name: _nameController.text,
         categoryId: categoryId,
         amount: amount,
-        description: _descriptionController.text.isEmpty
-            ? null
+        description: _descriptionController.text.isEmpty 
+            ? null 
             : _descriptionController.text,
       );
-
+      
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -290,7 +293,7 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
 
   Future<bool> _showOverBudgetWarning(double overAmount) async {
     final currency = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
-
+    
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -320,3 +323,17 @@ class _SuddenExpenseSheetState extends ConsumerState<SuddenExpenseSheet> {
     ) ?? false;
   }
 }
+```
+
+## Acceptance Criteria
+
+- [ ] SuddenExpenseSheet widget created with form
+- [ ] Category dropdown with default + custom categories
+- [ ] "Tambah Kategori Baru" option that shows text field
+- [ ] Over-budget warning dialog when expense exceeds plan
+- [ ] Successful save with snackbar notification
+
+## Notes
+
+- Uses Icons.flash_on for the sudden expense theme (orange color)
+- Follows the spec for the over-budget warning dialog

@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd frontend && flutter pub get && flutter build web",
-  "outputDirectory": "frontend/build/web",
-  "installCommand": "cd frontend && flutter pub get",
-  "framework": null
-}

@@ -35,7 +35,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(trip.title)),
+      appBar: AppBar(title: Text(trip.title ?? 'Untitled')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -56,7 +56,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
                 child: Row(children: [
                   const Text('Status: '),
                   const Spacer(),
-                  StatusBadge(status: trip.status),
+                  StatusBadge(status: trip.status ?? 'planned'),
                 ]),
               ),
             ),
@@ -66,9 +66,9 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Row(children: [
                   const Text('Share Code: '),
-                  Text(trip.shareCode, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  Text(trip.shareCode ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   const Spacer(),
-                  IconButton(icon: const Icon(Icons.copy), onPressed: () => _copyShareCode(trip.shareCode)),
+                  IconButton(icon: const Icon(Icons.copy), onPressed: () => _copyShareCode(trip.shareCode ?? '')),
                 ]),
               ),
             ),
@@ -77,9 +77,9 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
             const SizedBox(height: 8),
             ...trip.members.map((m) => ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: MemberAvatar(name: m.name),
-              title: Text(m.name),
-              trailing: Text(m.role.toUpperCase()),
+              leading: MemberAvatar(name: m.name ?? '?'),
+              title: Text(m.name ?? 'Unknown'),
+              trailing: Text((m.role ?? 'member').toUpperCase()),
             )),
           ],
         ),

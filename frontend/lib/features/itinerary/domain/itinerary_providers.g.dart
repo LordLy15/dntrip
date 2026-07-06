@@ -230,7 +230,7 @@ final expenseCategoriesProvider =
 
 typedef ExpenseCategoriesRef
     = AutoDisposeFutureProviderRef<List<ExpenseCategory>>;
-String _$customCategoryHash() => r'84f7eaac89fba05d1015e6649af6407b1d375053';
+String _$customCategoryHash() => r'bbd2bcc4e51bd7877700324bab81456d712291bf';
 
 /// See also [customCategory].
 @ProviderFor(customCategory)
@@ -243,12 +243,12 @@ class CustomCategoryFamily extends Family<AsyncValue<ExpenseCategory>> {
 
   /// See also [customCategory].
   CustomCategoryProvider call({
-    required String name,
+    required String categoryName,
     String icon = 'category',
     String? description,
   }) {
     return CustomCategoryProvider(
-      name: name,
+      categoryName: categoryName,
       icon: icon,
       description: description,
     );
@@ -259,7 +259,7 @@ class CustomCategoryFamily extends Family<AsyncValue<ExpenseCategory>> {
     covariant CustomCategoryProvider provider,
   ) {
     return call(
-      name: provider.name,
+      categoryName: provider.categoryName,
       icon: provider.icon,
       description: provider.description,
     );
@@ -285,13 +285,13 @@ class CustomCategoryProvider
     extends AutoDisposeFutureProvider<ExpenseCategory> {
   /// See also [customCategory].
   CustomCategoryProvider({
-    required String name,
+    required String categoryName,
     String icon = 'category',
     String? description,
   }) : this._internal(
           (ref) => customCategory(
             ref as CustomCategoryRef,
-            name: name,
+            categoryName: categoryName,
             icon: icon,
             description: description,
           ),
@@ -304,7 +304,7 @@ class CustomCategoryProvider
           dependencies: CustomCategoryFamily._dependencies,
           allTransitiveDependencies:
               CustomCategoryFamily._allTransitiveDependencies,
-          name: name,
+          categoryName: categoryName,
           icon: icon,
           description: description,
         );
@@ -316,12 +316,12 @@ class CustomCategoryProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.name,
+    required this.categoryName,
     required this.icon,
     required this.description,
   }) : super.internal();
 
-  final String name;
+  final String categoryName;
   final String icon;
   final String? description;
 
@@ -338,7 +338,7 @@ class CustomCategoryProvider
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        name: name,
+        categoryName: categoryName,
         icon: icon,
         description: description,
       ),
@@ -353,7 +353,7 @@ class CustomCategoryProvider
   @override
   bool operator ==(Object other) {
     return other is CustomCategoryProvider &&
-        other.name == name &&
+        other.categoryName == categoryName &&
         other.icon == icon &&
         other.description == description;
   }
@@ -361,7 +361,7 @@ class CustomCategoryProvider
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, name.hashCode);
+    hash = _SystemHash.combine(hash, categoryName.hashCode);
     hash = _SystemHash.combine(hash, icon.hashCode);
     hash = _SystemHash.combine(hash, description.hashCode);
 
@@ -370,8 +370,8 @@ class CustomCategoryProvider
 }
 
 mixin CustomCategoryRef on AutoDisposeFutureProviderRef<ExpenseCategory> {
-  /// The parameter `name` of this provider.
-  String get name;
+  /// The parameter `categoryName` of this provider.
+  String get categoryName;
 
   /// The parameter `icon` of this provider.
   String get icon;
@@ -386,7 +386,7 @@ class _CustomCategoryProviderElement
   _CustomCategoryProviderElement(super.provider);
 
   @override
-  String get name => (origin as CustomCategoryProvider).name;
+  String get categoryName => (origin as CustomCategoryProvider).categoryName;
   @override
   String get icon => (origin as CustomCategoryProvider).icon;
   @override

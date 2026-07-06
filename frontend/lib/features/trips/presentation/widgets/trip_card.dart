@@ -25,9 +25,9 @@ class TripCard extends StatelessWidget {
                   Icon(Icons.place, color: Theme.of(context).colorScheme.primary, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(trip.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    child: Text(trip.title ?? 'Untitled', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                   ),
-                  StatusBadge(status: trip.status),
+                  StatusBadge(status: trip.status ?? 'planned'),
                 ],
               ),
               const SizedBox(height: 8),

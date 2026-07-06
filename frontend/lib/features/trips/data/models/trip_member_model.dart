@@ -9,9 +9,9 @@ class TripMemberModel with _$TripMemberModel {
 
   const factory TripMemberModel({
     required int id,
-    required String name,
+    String? name,
     String? email,
-    required String role,
+    String? role,
   }) = _TripMemberModel;
 
   factory TripMemberModel.fromJson(Map<String, dynamic> json) =>

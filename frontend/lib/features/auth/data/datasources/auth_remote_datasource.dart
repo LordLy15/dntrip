@@ -23,8 +23,13 @@ class AuthRemoteDatasource {
       },
     );
 
-    final userData = response['data']['user'] as Map<String, dynamic>;
-    final token = response['data']['token'] as String;
+    final data = response['data'] as Map<String, dynamic>?;
+    final userData = data?['user'] as Map<String, dynamic>?;
+    final token = data?['token'] as String?;
+
+    if (userData == null || token == null) {
+      throw Exception('Invalid response from server');
+    }
 
     return (
       user: UserModel.fromJson(userData),
@@ -44,8 +49,13 @@ class AuthRemoteDatasource {
       },
     );
 
-    final userData = response['data']['user'] as Map<String, dynamic>;
-    final token = response['data']['token'] as String;
+    final data = response['data'] as Map<String, dynamic>?;
+    final userData = data?['user'] as Map<String, dynamic>?;
+    final token = data?['token'] as String?;
+
+    if (userData == null || token == null) {
+      throw Exception('Invalid response from server');
+    }
 
     return (
       user: UserModel.fromJson(userData),
@@ -59,7 +69,13 @@ class AuthRemoteDatasource {
 
   Future<UserModel> getCurrentUser() async {
     final response = await _apiClient.get(ApiEndpoints.user);
-    final userData = response['data']['user'] as Map<String, dynamic>;
+    final data = response['data'] as Map<String, dynamic>?;
+    final userData = data?['user'] as Map<String, dynamic>?;
+
+    if (userData == null) {
+      throw Exception('Invalid response from server');
+    }
+
     return UserModel.fromJson(userData);
   }
 }

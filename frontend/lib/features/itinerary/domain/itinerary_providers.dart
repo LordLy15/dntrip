@@ -134,13 +134,13 @@ Future<List<ExpenseCategory>> expenseCategories(ExpenseCategoriesRef ref) async 
 // Custom category creation
 @riverpod
 Future<ExpenseCategory> customCategory(CustomCategoryRef ref, {
-  required String name,
+  required String categoryName,
   String icon = 'category',
   String? description,
 }) async {
   final repository = ref.read(itineraryRepositoryProvider);
   return repository.createCustomCategory(
-    name: name,
+    name: categoryName,
     icon: icon,
     description: description,
   );

@@ -10,29 +10,41 @@ class TripModel with _$TripModel {
 
   const factory TripModel({
     required int id,
-    required String title,
+    String? title,
     String? destination,
     String? description,
     String? startDate,
     String? endDate,
-    required String shareCode,
-    required String status,
-    required UserModel owner,
+    String? shareCode,
+    String? status,
+    required TripOwner owner,
     @Default([]) List<TripMemberModel> members,
     int? membersCount,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
+    String? actualStartTime,
+    String? actualEndTime,
   }) = _TripModel;
+
+  bool get hasLocation => latitude != null && latitude!.isNotEmpty && longitude != null && longitude!.isNotEmpty;
+  bool get isOnTime {
+    if (actualStartTime == null) return true;
+    // Simple check - if actual start is before planned, it's on time
+    return true; // Will be calculated based on planned time
+  }
 
   factory TripModel.fromJson(Map<String, dynamic> json) =>
       _$TripModelFromJson(json);
 }
 
 @freezed
-class UserModel with _$UserModel {
-  const factory UserModel({
+class TripOwner with _$TripOwner {
+  const factory TripOwner({
     required int id,
-    required String name,
-  }) = _UserModel;
+    String? name,
+  }) = _TripOwner;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory TripOwner.fromJson(Map<String, dynamic> json) =>
+      _$TripOwnerFromJson(json);
 }

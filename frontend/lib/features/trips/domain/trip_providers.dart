@@ -58,6 +58,9 @@ class TripsNotifier extends _$TripsNotifier {
     String? description,
     required String startDate,
     required String endDate,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
   }) async {
     final trip = await ref.read(tripRepositoryProvider).createTrip(
       title: title,
@@ -65,6 +68,9 @@ class TripsNotifier extends _$TripsNotifier {
       description: description,
       startDate: startDate,
       endDate: endDate,
+      planBudget: planBudget,
+      latitude: latitude,
+      longitude: longitude,
     );
     await loadTrips();
     return trip;
@@ -107,6 +113,9 @@ class TripDetailNotifier extends _$TripDetailNotifier {
     String? description,
     String? startDate,
     String? endDate,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
   }) async {
     if (state == null) return;
     final updated = await ref.read(tripRepositoryProvider).updateTrip(
@@ -116,6 +125,9 @@ class TripDetailNotifier extends _$TripDetailNotifier {
       description: description,
       startDate: startDate,
       endDate: endDate,
+      planBudget: planBudget,
+      latitude: latitude,
+      longitude: longitude,
     );
     state = updated;
   }
@@ -132,13 +144,15 @@ class MembersNotifier extends _$MembersNotifier {
   }
 
   Future<void> updateRole(int userId, String role) async {
-    final tripId = ref.read(tripDetailNotifierProvider)!.id;
+    final tripId = ref.read(tripDetailNotifierProvider)?.id;
+    if (tripId == null) return;
     await ref.read(tripRepositoryProvider).updateMemberRole(tripId, userId, role);
     await loadMembers(tripId);
   }
 
   Future<void> removeMember(int userId) async {
-    final tripId = ref.read(tripDetailNotifierProvider)!.id;
+    final tripId = ref.read(tripDetailNotifierProvider)?.id;
+    if (tripId == null) return;
     await ref.read(tripRepositoryProvider).removeMember(tripId, userId);
     await loadMembers(tripId);
   }

@@ -8,6 +8,9 @@ class ApiClient {
   late final Dio _dio;
   final HiveStorage _storage;
 
+  // Expose Dio instance
+  Dio get dio => _dio;
+
   ApiClient(this._storage) {
     _dio = Dio(BaseOptions(
       baseUrl: AppConstants.baseUrl,

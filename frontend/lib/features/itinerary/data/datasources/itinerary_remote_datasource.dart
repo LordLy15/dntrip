@@ -10,7 +10,13 @@ class ItineraryRemoteDatasource {
 
   Future<ItineraryData> getItinerary(int tripId) async {
     final response = await _apiClient.get('/trips/$tripId/days');
-    return ItineraryData.fromJson(response['data']);
+    final data = response['data'] as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw Exception('Invalid response from server');
+    }
+
+    return ItineraryData.fromJson(data);
   }
 
   Future<ActivityModel> createActivity({
@@ -30,7 +36,14 @@ class ItineraryRemoteDatasource {
     if (description != null) data['description'] = description;
 
     final response = await _apiClient.post('/trips/$tripId/activities', data: data);
-    return ActivityModel.fromJson(response['data']['activity']);
+    final responseData = response['data'] as Map<String, dynamic>?;
+    final activityData = responseData?['activity'] as Map<String, dynamic>?;
+
+    if (activityData == null) {
+      throw Exception('Failed to create activity');
+    }
+
+    return ActivityModel.fromJson(activityData);
   }
 
   Future<({ActivityModel activity, BudgetSummaryModel budget})> completeActivity({
@@ -42,9 +55,18 @@ class ItineraryRemoteDatasource {
       '/trips/$tripId/activities/$activityId/complete',
       data: {'actual_cost': actualCost},
     );
+
+    final data = response['data'] as Map<String, dynamic>?;
+    final activityData = data?['activity'] as Map<String, dynamic>?;
+    final budgetData = data?['budget_summary'] as Map<String, dynamic>?;
+
+    if (activityData == null || budgetData == null) {
+      throw Exception('Failed to complete activity');
+    }
+
     return (
-      activity: ActivityModel.fromJson(response['data']['activity']),
-      budget: BudgetSummaryModel.fromJson(response['data']['budget_summary']),
+      activity: ActivityModel.fromJson(activityData),
+      budget: BudgetSummaryModel.fromJson(budgetData),
     );
   }
 

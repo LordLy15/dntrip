@@ -53,7 +53,7 @@ class _ActivityCompleteSheetState extends State<ActivityCompleteSheet> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.activity.title,
+            widget.activity.title ?? 'Activity',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
