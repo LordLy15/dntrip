@@ -136,10 +136,23 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/trips/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('New Trip'),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'join',
+            onPressed: () => context.push('/join'),
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.group_add),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'new',
+            onPressed: () => context.push('/trips/new'),
+            icon: const Icon(Icons.add),
+            label: const Text('New Trip'),
+          ),
+        ],
       ),
     );
   }
