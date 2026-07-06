@@ -31,7 +31,7 @@ class TripRemoteDatasource {
       throw Exception('Trip not found');
     }
 
-    return TripModel.fromJson(tripData);
+    return TripModel.fromApiResponse(tripData);
   }
 
   Future<TripModel> createTrip({
@@ -120,7 +120,7 @@ class TripRemoteDatasource {
     }
 
     return (
-      trip: TripModel.fromJson(tripData),
+      trip: TripModel.fromApiResponse(tripData),
       role: role,
     );
   }
@@ -136,7 +136,7 @@ class TripRemoteDatasource {
 
     return membersData
         .map((e) => e as Map<String, dynamic>)
-        .map((e) => TripMemberModel.fromJson(e))
+        .map((e) => TripMemberModel.fromNestedJson(e))
         .toList();
   }
 

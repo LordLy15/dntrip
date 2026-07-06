@@ -36,6 +36,35 @@ class TripModel with _$TripModel {
 
   factory TripModel.fromJson(Map<String, dynamic> json) =>
       _$TripModelFromJson(json);
+
+  /// Create from API response with nested members
+  static TripModel fromApiResponse(Map<String, dynamic> json) {
+    // Handle members array with nested user structure
+    final membersJson = json['members'] as List?;
+    final members = membersJson
+        ?.map((m) => TripMemberModel.fromNestedJson(m as Map<String, dynamic>))
+        .toList() ?? [];
+
+    return TripModel(
+      id: json['id'] as int,
+      title: json['title'] as String?,
+      destination: json['destination'] as String?,
+      description: json['description'] as String?,
+      startDate: json['start_date'] as String?,
+      endDate: json['end_date'] as String?,
+      shareCode: json['share_code'] as String?,
+      status: json['status'] as String?,
+      owner: TripOwner(
+        id: (json['owner'] as Map<String, dynamic>?)?['id'] as int? ?? 0,
+        name: (json['owner'] as Map<String, dynamic>?)?['name'] as String?,
+      ),
+      members: members,
+      membersCount: members.length,
+      planBudget: json['plan_budget'] as int?,
+      latitude: json['latitude'] as String?,
+      longitude: json['longitude'] as String?,
+    );
+  }
 }
 
 @freezed

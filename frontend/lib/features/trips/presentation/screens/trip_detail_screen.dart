@@ -61,18 +61,71 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(children: [
-                  const Text('Share Code: '),
-                  Text(trip.shareCode ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  const Spacer(),
-                  IconButton(icon: const Icon(Icons.copy), onPressed: () => _copyShareCode(trip.shareCode ?? '')),
-                ]),
+            if (trip.shareCode != null && trip.shareCode!.isNotEmpty)
+              Card(
+                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        const Icon(Icons.share, size: 20, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        const Text('Share Code:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ]),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blue.shade200),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              trip.shareCode ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                letterSpacing: 4,
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            IconButton(
+                              icon: const Icon(Icons.copy, color: Colors.blue),
+                              onPressed: () => _copyShareCode(trip.shareCode ?? ''),
+                              tooltip: 'Copy Code',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Bagikan kode ini untuk mengundang teman',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 24),
+
+            // Itinerary Button
+            ElevatedButton.icon(
+              onPressed: () => context.push('/trips/${trip.id}/itinerary'),
+              icon: const Icon(Icons.calendar_month),
+              label: const Text('Lihat Itinerary & Tambah Kegiatan'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
               ),
             ),
             const SizedBox(height: 24),
+
             Text('Members (${trip.members.length})', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...trip.members.map((m) => ListTile(
