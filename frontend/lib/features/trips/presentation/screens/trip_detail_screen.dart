@@ -8,6 +8,7 @@ import '../widgets/member_avatar.dart';
 
 class TripDetailScreen extends ConsumerStatefulWidget {
   final int tripId;
+
   const TripDetailScreen({super.key, required this.tripId});
 
   @override
@@ -22,8 +23,12 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
   }
 
   void _copyShareCode(String code) {
+    if (code.isEmpty || code == 'NO-CODE') return;
     Clipboard.setData(ClipboardData(text: code));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Share code copied!')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Share code copied!'),
+      duration: Duration(seconds: 2),
+    ));
   }
 
   @override
@@ -31,116 +36,192 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
     final trip = ref.watch(tripDetailNotifierProvider);
 
     if (trip == null) {
-      return Scaffold(appBar: AppBar(), body: const Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
+    final shareCode = trip.shareCode ?? 'NO-CODE';
+    final hasShareCode = shareCode.isNotEmpty && shareCode != 'NO-CODE';
+
     return Scaffold(
-      appBar: AppBar(title: Text(trip.title ?? 'Untitled')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (trip.destination != null) ...[
-              Row(children: [const Icon(Icons.place, size: 20), const SizedBox(width: 8), Text(trip.destination!)]),
-              const SizedBox(height: 12),
-            ],
-            if (trip.startDate != null || trip.endDate != null) ...[
-              Row(children: [const Icon(Icons.calendar_today, size: 20), const SizedBox(width: 8), Text('${trip.startDate ?? '?'} - ${trip.endDate ?? '?'}')]),
-              const SizedBox(height: 12),
-            ],
-            if (trip.description != null) ...[Text(trip.description!), const SizedBox(height: 16)],
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(children: [
-                  const Text('Status: '),
-                  const Spacer(),
-                  StatusBadge(status: trip.status ?? 'planned'),
+      appBar: AppBar(title: Text(trip.title ?? 'Trip Detail')),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(tripDetailNotifierProvider.notifier).loadTrip(widget.tripId),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Trip Info
+              if (trip.destination != null && trip.destination!.isNotEmpty) ...[
+                Row(children: [
+                  const Icon(Icons.place, size: 20, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(trip.destination!)),
                 ]),
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (trip.shareCode != null && trip.shareCode!.isNotEmpty)
+                const SizedBox(height: 12),
+              ],
+
+              if (trip.startDate != null || trip.endDate != null) ...[
+                Row(children: [
+                  const Icon(Icons.calendar_today, size: 20, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Text('${trip.startDate ?? '?'} - ${trip.endDate ?? '?'}'),
+                ]),
+                const SizedBox(height: 12),
+              ],
+
+              if (trip.description != null && trip.description!.isNotEmpty) ...[
+                Text(trip.description!),
+                const SizedBox(height: 16),
+              ],
+
+              // Status Card
               Card(
-                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(children: [
+                    const Text('Status: '),
+                    const Spacer(),
+                    StatusBadge(status: trip.status ?? 'planned'),
+                  ]),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Share Code Card - SELALU TAMPILKAN
+              Card(
+                color: hasShareCode ? Colors.blue.shade50 : Colors.grey.shade100,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        const Icon(Icons.share, size: 20, color: Colors.blue),
+                        Icon(Icons.share, size: 20, color: hasShareCode ? Colors.blue : Colors.grey),
                         const SizedBox(width: 8),
-                        const Text('Share Code:', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          hasShareCode ? 'Share Code' : 'Share Code (akan di-generate)',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ]),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue.shade200),
+                          border: Border.all(
+                            color: hasShareCode ? Colors.blue.shade200 : Colors.grey.shade300,
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              trip.shareCode ?? '',
+                              shareCode,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 24,
+                                fontSize: 28,
                                 letterSpacing: 4,
-                                color: Colors.blue.shade700,
+                                color: hasShareCode ? Colors.blue.shade700 : Colors.grey,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            IconButton(
-                              icon: const Icon(Icons.copy, color: Colors.blue),
-                              onPressed: () => _copyShareCode(trip.shareCode ?? ''),
-                              tooltip: 'Copy Code',
-                            ),
+                            if (hasShareCode) ...[
+                              const SizedBox(width: 12),
+                              IconButton(
+                                icon: const Icon(Icons.copy, color: Colors.blue),
+                                onPressed: () => _copyShareCode(shareCode),
+                                tooltip: 'Copy Code',
+                              ),
+                            ],
                           ],
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Bagikan kode ini untuk mengundang teman',
+                        hasShareCode
+                            ? 'Bagikan kode ini untuk mengundang teman'
+                            : 'Share code akan di-generate saat trip dibuat',
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
               ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Itinerary Button
-            ElevatedButton.icon(
-              onPressed: () => context.push('/trips/${trip.id}/itinerary'),
-              icon: const Icon(Icons.calendar_month),
-              label: const Text('Lihat Itinerary & Tambah Kegiatan'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
+              // Itinerary Button - JELAS DAN BESAR
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push('/trips/${trip.id}/itinerary'),
+                  icon: const Icon(Icons.calendar_month, size: 24),
+                  label: const Text(
+                    'LIHAT ITINERARY & TAMBAH KEGIATAN',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  'Tekan untuk melihat Hari 1, Hari 2, dst dan menambah kegiatan',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 24),
 
-            Text('Members (${trip.members.length})', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ...trip.members.map((m) => ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: MemberAvatar(name: m.name ?? '?'),
-              title: Text(m.name ?? 'Unknown'),
-              trailing: Text((m.role ?? 'member').toUpperCase()),
-            )),
-          ],
+              // Members Section
+              Text(
+                'Members (${trip.members.length})',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              if (trip.members.isEmpty)
+                Text(
+                  'Belum ada member',
+                  style: TextStyle(color: Colors.grey.shade500),
+                )
+              else
+                ...trip.members.map((m) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: MemberAvatar(name: m.name ?? '?'),
+                  title: Text(m.name ?? 'Unknown'),
+                  subtitle: Text(m.email ?? ''),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: m.role == 'owner' ? Colors.blue.shade100 : Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      (m.role ?? 'member').toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: m.role == 'owner' ? Colors.blue.shade700 : Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                )),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/trips/${trip.id}/edit'),
         icon: const Icon(Icons.edit),
-        label: const Text('Edit'),
+        label: const Text('Edit Trip'),
       ),
     );
   }
