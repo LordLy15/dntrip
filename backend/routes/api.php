@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TripController;
 use App\Http\Controllers\Api\ItineraryController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\SuddenExpenseController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -32,4 +34,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/trips/{tripId}/activities/{activityId}', [ItineraryController::class, 'updateActivity']);
     Route::put('/trips/{tripId}/activities/{activityId}/complete', [ItineraryController::class, 'completeActivity']);
     Route::delete('/trips/{tripId}/activities/{activityId}', [ItineraryController::class, 'deleteActivity']);
+
+    // Expense Categories
+    Route::get('/expense-categories', [ExpenseCategoryController::class, 'index']);
+    Route::post('/expense-categories', [ExpenseCategoryController::class, 'store']);
+
+    // Sudden Expenses
+    Route::get('/trips/{trip}/sudden-expenses', [SuddenExpenseController::class, 'index']);
+    Route::post('/trips/{trip}/sudden-expenses', [SuddenExpenseController::class, 'store']);
+    Route::delete('/trips/{trip}/sudden-expenses/{expense}', [SuddenExpenseController::class, 'destroy']);
 });

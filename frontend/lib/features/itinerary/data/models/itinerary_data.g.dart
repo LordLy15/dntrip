@@ -8,19 +8,15 @@ part of 'itinerary_data.dart';
 
 _$ItineraryDataImpl _$$ItineraryDataImplFromJson(Map<String, dynamic> json) =>
     _$ItineraryDataImpl(
-      tripId: (json['trip_id'] as num).toInt(),
-      budgetSummary: BudgetSummaryModel.fromJson(
-          json['budget_summary'] as Map<String, dynamic>),
+      tripId: (json['tripId'] as num?)?.toInt(),
       days: (json['days'] as List<dynamic>?)
               ?.map((e) => TripDayModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$ItineraryDataImplToJson(
-        _$ItineraryDataImpl instance) =>
+Map<String, dynamic> _$$ItineraryDataImplToJson(_$ItineraryDataImpl instance) =>
     <String, dynamic>{
-      'trip_id': instance.tripId,
-      'budget_summary': instance.budgetSummary,
+      'tripId': instance.tripId,
       'days': instance.days,
     };

@@ -20,10 +20,14 @@ BudgetSummaryModel _$BudgetSummaryModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$BudgetSummaryModel {
-  int get totalEstimated => throw _privateConstructorUsedError;
-  int get totalActual => throw _privateConstructorUsedError;
-  int get variance => throw _privateConstructorUsedError;
+  double? get planBudget => throw _privateConstructorUsedError;
+  double? get totalActualActivities => throw _privateConstructorUsedError;
+  double? get totalSuddenExpenses => throw _privateConstructorUsedError;
+  double? get totalActual => throw _privateConstructorUsedError;
+  double? get variance => throw _privateConstructorUsedError;
   bool get isOverbudget => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
+  double? get statusAmount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -38,7 +42,14 @@ abstract class $BudgetSummaryModelCopyWith<$Res> {
       _$BudgetSummaryModelCopyWithImpl<$Res, BudgetSummaryModel>;
   @useResult
   $Res call(
-      {int totalEstimated, int totalActual, int variance, bool isOverbudget});
+      {double? planBudget,
+      double? totalActualActivities,
+      double? totalSuddenExpenses,
+      double? totalActual,
+      double? variance,
+      bool isOverbudget,
+      String? status,
+      double? statusAmount});
 }
 
 /// @nodoc
@@ -54,28 +65,48 @@ class _$BudgetSummaryModelCopyWithImpl<$Res, $Val extends BudgetSummaryModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? totalEstimated = null,
-    Object? totalActual = null,
-    Object? variance = null,
+    Object? planBudget = freezed,
+    Object? totalActualActivities = freezed,
+    Object? totalSuddenExpenses = freezed,
+    Object? totalActual = freezed,
+    Object? variance = freezed,
     Object? isOverbudget = null,
+    Object? status = freezed,
+    Object? statusAmount = freezed,
   }) {
     return _then(_value.copyWith(
-      totalEstimated: null == totalEstimated
-          ? _value.totalEstimated
-          : totalEstimated // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalActual: null == totalActual
+      planBudget: freezed == planBudget
+          ? _value.planBudget
+          : planBudget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalActualActivities: freezed == totalActualActivities
+          ? _value.totalActualActivities
+          : totalActualActivities // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalSuddenExpenses: freezed == totalSuddenExpenses
+          ? _value.totalSuddenExpenses
+          : totalSuddenExpenses // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalActual: freezed == totalActual
           ? _value.totalActual
           : totalActual // ignore: cast_nullable_to_non_nullable
-              as int,
-      variance: null == variance
+              as double?,
+      variance: freezed == variance
           ? _value.variance
           : variance // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double?,
       isOverbudget: null == isOverbudget
           ? _value.isOverbudget
           : isOverbudget // ignore: cast_nullable_to_non_nullable
               as bool,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statusAmount: freezed == statusAmount
+          ? _value.statusAmount
+          : statusAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
     ) as $Val);
   }
 }
@@ -89,7 +120,14 @@ abstract class _$$BudgetSummaryModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int totalEstimated, int totalActual, int variance, bool isOverbudget});
+      {double? planBudget,
+      double? totalActualActivities,
+      double? totalSuddenExpenses,
+      double? totalActual,
+      double? variance,
+      bool isOverbudget,
+      String? status,
+      double? statusAmount});
 }
 
 /// @nodoc
@@ -103,56 +141,90 @@ class __$$BudgetSummaryModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? totalEstimated = null,
-    Object? totalActual = null,
-    Object? variance = null,
+    Object? planBudget = freezed,
+    Object? totalActualActivities = freezed,
+    Object? totalSuddenExpenses = freezed,
+    Object? totalActual = freezed,
+    Object? variance = freezed,
     Object? isOverbudget = null,
+    Object? status = freezed,
+    Object? statusAmount = freezed,
   }) {
     return _then(_$BudgetSummaryModelImpl(
-      totalEstimated: null == totalEstimated
-          ? _value.totalEstimated
-          : totalEstimated // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalActual: null == totalActual
+      planBudget: freezed == planBudget
+          ? _value.planBudget
+          : planBudget // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalActualActivities: freezed == totalActualActivities
+          ? _value.totalActualActivities
+          : totalActualActivities // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalSuddenExpenses: freezed == totalSuddenExpenses
+          ? _value.totalSuddenExpenses
+          : totalSuddenExpenses // ignore: cast_nullable_to_non_nullable
+              as double?,
+      totalActual: freezed == totalActual
           ? _value.totalActual
           : totalActual // ignore: cast_nullable_to_non_nullable
-              as int,
-      variance: null == variance
+              as double?,
+      variance: freezed == variance
           ? _value.variance
           : variance // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double?,
       isOverbudget: null == isOverbudget
           ? _value.isOverbudget
           : isOverbudget // ignore: cast_nullable_to_non_nullable
               as bool,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statusAmount: freezed == statusAmount
+          ? _value.statusAmount
+          : statusAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$BudgetSummaryModelImpl implements _BudgetSummaryModel {
+class _$BudgetSummaryModelImpl extends _BudgetSummaryModel {
   const _$BudgetSummaryModelImpl(
-      {required this.totalEstimated,
-      required this.totalActual,
-      required this.variance,
-      required this.isOverbudget});
+      {this.planBudget,
+      this.totalActualActivities,
+      this.totalSuddenExpenses,
+      this.totalActual,
+      this.variance,
+      this.isOverbudget = false,
+      this.status,
+      this.statusAmount})
+      : super._();
 
   factory _$BudgetSummaryModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$BudgetSummaryModelImplFromJson(json);
 
   @override
-  final int totalEstimated;
+  final double? planBudget;
   @override
-  final int totalActual;
+  final double? totalActualActivities;
   @override
-  final int variance;
+  final double? totalSuddenExpenses;
   @override
+  final double? totalActual;
+  @override
+  final double? variance;
+  @override
+  @JsonKey()
   final bool isOverbudget;
+  @override
+  final String? status;
+  @override
+  final double? statusAmount;
 
   @override
   String toString() {
-    return 'BudgetSummaryModel(totalEstimated: $totalEstimated, totalActual: $totalActual, variance: $variance, isOverbudget: $isOverbudget)';
+    return 'BudgetSummaryModel(planBudget: $planBudget, totalActualActivities: $totalActualActivities, totalSuddenExpenses: $totalSuddenExpenses, totalActual: $totalActual, variance: $variance, isOverbudget: $isOverbudget, status: $status, statusAmount: $statusAmount)';
   }
 
   @override
@@ -160,20 +232,35 @@ class _$BudgetSummaryModelImpl implements _BudgetSummaryModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BudgetSummaryModelImpl &&
-            (identical(other.totalEstimated, totalEstimated) ||
-                other.totalEstimated == totalEstimated) &&
+            (identical(other.planBudget, planBudget) ||
+                other.planBudget == planBudget) &&
+            (identical(other.totalActualActivities, totalActualActivities) ||
+                other.totalActualActivities == totalActualActivities) &&
+            (identical(other.totalSuddenExpenses, totalSuddenExpenses) ||
+                other.totalSuddenExpenses == totalSuddenExpenses) &&
             (identical(other.totalActual, totalActual) ||
                 other.totalActual == totalActual) &&
             (identical(other.variance, variance) ||
                 other.variance == variance) &&
             (identical(other.isOverbudget, isOverbudget) ||
-                other.isOverbudget == isOverbudget));
+                other.isOverbudget == isOverbudget) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.statusAmount, statusAmount) ||
+                other.statusAmount == statusAmount));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, totalEstimated, totalActual, variance, isOverbudget);
+      runtimeType,
+      planBudget,
+      totalActualActivities,
+      totalSuddenExpenses,
+      totalActual,
+      variance,
+      isOverbudget,
+      status,
+      statusAmount);
 
   @JsonKey(ignore: true)
   @override
@@ -190,24 +277,37 @@ class _$BudgetSummaryModelImpl implements _BudgetSummaryModel {
   }
 }
 
-abstract class _BudgetSummaryModel implements BudgetSummaryModel {
+abstract class _BudgetSummaryModel extends BudgetSummaryModel {
   const factory _BudgetSummaryModel(
-      {required final int totalEstimated,
-      required final int totalActual,
-      required final int variance,
-      required final bool isOverbudget}) = _$BudgetSummaryModelImpl;
+      {final double? planBudget,
+      final double? totalActualActivities,
+      final double? totalSuddenExpenses,
+      final double? totalActual,
+      final double? variance,
+      final bool isOverbudget,
+      final String? status,
+      final double? statusAmount}) = _$BudgetSummaryModelImpl;
+  const _BudgetSummaryModel._() : super._();
 
   factory _BudgetSummaryModel.fromJson(Map<String, dynamic> json) =
       _$BudgetSummaryModelImpl.fromJson;
 
   @override
-  int get totalEstimated;
+  double? get planBudget;
   @override
-  int get totalActual;
+  double? get totalActualActivities;
   @override
-  int get variance;
+  double? get totalSuddenExpenses;
+  @override
+  double? get totalActual;
+  @override
+  double? get variance;
   @override
   bool get isOverbudget;
+  @override
+  String? get status;
+  @override
+  double? get statusAmount;
   @override
   @JsonKey(ignore: true)
   _$$BudgetSummaryModelImplCopyWith<_$BudgetSummaryModelImpl> get copyWith =>

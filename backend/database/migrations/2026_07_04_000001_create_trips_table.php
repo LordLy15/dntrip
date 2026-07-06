@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('share_code', 10)->unique()->nullable();
+            $table->decimal('plan_budget', 14, 2)->nullable();
             $table->enum('status', ['planned', 'ongoing', 'completed'])->default('planned');
             $table->timestamps();
         });

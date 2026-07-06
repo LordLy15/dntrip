@@ -20,8 +20,7 @@ ItineraryData _$ItineraryDataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ItineraryData {
-  int get tripId => throw _privateConstructorUsedError;
-  BudgetSummaryModel get budgetSummary => throw _privateConstructorUsedError;
+  int? get tripId => throw _privateConstructorUsedError;
   List<TripDayModel> get days => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -36,10 +35,7 @@ abstract class $ItineraryDataCopyWith<$Res> {
           ItineraryData value, $Res Function(ItineraryData) then) =
       _$ItineraryDataCopyWithImpl<$Res, ItineraryData>;
   @useResult
-  $Res call(
-      {int tripId, BudgetSummaryModel budgetSummary, List<TripDayModel> days});
-
-  $BudgetSummaryModelCopyWith<$Res> get budgetSummary;
+  $Res call({int? tripId, List<TripDayModel> days});
 }
 
 /// @nodoc
@@ -55,32 +51,19 @@ class _$ItineraryDataCopyWithImpl<$Res, $Val extends ItineraryData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tripId = null,
-    Object? budgetSummary = null,
+    Object? tripId = freezed,
     Object? days = null,
   }) {
     return _then(_value.copyWith(
-      tripId: null == tripId
+      tripId: freezed == tripId
           ? _value.tripId
           : tripId // ignore: cast_nullable_to_non_nullable
-              as int,
-      budgetSummary: null == budgetSummary
-          ? _value.budgetSummary
-          : budgetSummary // ignore: cast_nullable_to_non_nullable
-              as BudgetSummaryModel,
+              as int?,
       days: null == days
           ? _value.days
           : days // ignore: cast_nullable_to_non_nullable
               as List<TripDayModel>,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $BudgetSummaryModelCopyWith<$Res> get budgetSummary {
-    return $BudgetSummaryModelCopyWith<$Res>(_value.budgetSummary, (value) {
-      return _then(_value.copyWith(budgetSummary: value) as $Val);
-    });
   }
 }
 
@@ -92,11 +75,7 @@ abstract class _$$ItineraryDataImplCopyWith<$Res>
       __$$ItineraryDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int tripId, BudgetSummaryModel budgetSummary, List<TripDayModel> days});
-
-  @override
-  $BudgetSummaryModelCopyWith<$Res> get budgetSummary;
+  $Res call({int? tripId, List<TripDayModel> days});
 }
 
 /// @nodoc
@@ -110,19 +89,14 @@ class __$$ItineraryDataImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tripId = null,
-    Object? budgetSummary = null,
+    Object? tripId = freezed,
     Object? days = null,
   }) {
     return _then(_$ItineraryDataImpl(
-      tripId: null == tripId
+      tripId: freezed == tripId
           ? _value.tripId
           : tripId // ignore: cast_nullable_to_non_nullable
-              as int,
-      budgetSummary: null == budgetSummary
-          ? _value.budgetSummary
-          : budgetSummary // ignore: cast_nullable_to_non_nullable
-              as BudgetSummaryModel,
+              as int?,
       days: null == days
           ? _value._days
           : days // ignore: cast_nullable_to_non_nullable
@@ -135,18 +109,14 @@ class __$$ItineraryDataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ItineraryDataImpl implements _ItineraryData {
   const _$ItineraryDataImpl(
-      {required this.tripId,
-      required this.budgetSummary,
-      final List<TripDayModel> days = const []})
+      {this.tripId, final List<TripDayModel> days = const []})
       : _days = days;
 
   factory _$ItineraryDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ItineraryDataImplFromJson(json);
 
   @override
-  final int tripId;
-  @override
-  final BudgetSummaryModel budgetSummary;
+  final int? tripId;
   final List<TripDayModel> _days;
   @override
   @JsonKey()
@@ -158,7 +128,7 @@ class _$ItineraryDataImpl implements _ItineraryData {
 
   @override
   String toString() {
-    return 'ItineraryData(tripId: $tripId, budgetSummary: $budgetSummary, days: $days)';
+    return 'ItineraryData(tripId: $tripId, days: $days)';
   }
 
   @override
@@ -167,15 +137,13 @@ class _$ItineraryDataImpl implements _ItineraryData {
         (other.runtimeType == runtimeType &&
             other is _$ItineraryDataImpl &&
             (identical(other.tripId, tripId) || other.tripId == tripId) &&
-            (identical(other.budgetSummary, budgetSummary) ||
-                other.budgetSummary == budgetSummary) &&
             const DeepCollectionEquality().equals(other._days, _days));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, tripId, budgetSummary,
-      const DeepCollectionEquality().hash(_days));
+  int get hashCode => Object.hash(
+      runtimeType, tripId, const DeepCollectionEquality().hash(_days));
 
   @JsonKey(ignore: true)
   @override
@@ -193,17 +161,13 @@ class _$ItineraryDataImpl implements _ItineraryData {
 
 abstract class _ItineraryData implements ItineraryData {
   const factory _ItineraryData(
-      {required final int tripId,
-      required final BudgetSummaryModel budgetSummary,
-      final List<TripDayModel> days}) = _$ItineraryDataImpl;
+      {final int? tripId, final List<TripDayModel> days}) = _$ItineraryDataImpl;
 
   factory _ItineraryData.fromJson(Map<String, dynamic> json) =
       _$ItineraryDataImpl.fromJson;
 
   @override
-  int get tripId;
-  @override
-  BudgetSummaryModel get budgetSummary;
+  int? get tripId;
   @override
   List<TripDayModel> get days;
   @override

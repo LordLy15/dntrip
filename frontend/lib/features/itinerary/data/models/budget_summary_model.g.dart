@@ -9,17 +9,26 @@ part of 'budget_summary_model.dart';
 _$BudgetSummaryModelImpl _$$BudgetSummaryModelImplFromJson(
         Map<String, dynamic> json) =>
     _$BudgetSummaryModelImpl(
-      totalEstimated: (json['total_estimated'] as num).toInt(),
-      totalActual: (json['total_actual'] as num).toInt(),
-      variance: (json['variance'] as num).toInt(),
-      isOverbudget: json['is_overbudget'] as bool,
+      planBudget: (json['planBudget'] as num?)?.toDouble(),
+      totalActualActivities:
+          (json['totalActualActivities'] as num?)?.toDouble(),
+      totalSuddenExpenses: (json['totalSuddenExpenses'] as num?)?.toDouble(),
+      totalActual: (json['totalActual'] as num?)?.toDouble(),
+      variance: (json['variance'] as num?)?.toDouble(),
+      isOverbudget: json['isOverbudget'] as bool? ?? false,
+      status: json['status'] as String?,
+      statusAmount: (json['statusAmount'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$BudgetSummaryModelImplToJson(
         _$BudgetSummaryModelImpl instance) =>
     <String, dynamic>{
-      'total_estimated': instance.totalEstimated,
-      'total_actual': instance.totalActual,
+      'planBudget': instance.planBudget,
+      'totalActualActivities': instance.totalActualActivities,
+      'totalSuddenExpenses': instance.totalSuddenExpenses,
+      'totalActual': instance.totalActual,
       'variance': instance.variance,
-      'is_overbudget': instance.isOverbudget,
+      'isOverbudget': instance.isOverbudget,
+      'status': instance.status,
+      'statusAmount': instance.statusAmount,
     };

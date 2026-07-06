@@ -20,6 +20,7 @@ class Trip extends Model
         'end_date',
         'share_code',
         'status',
+        'plan_budget',
     ];
 
     protected $casts = [
@@ -50,6 +51,11 @@ class Trip extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(TripActivity::class);
+    }
+
+    public function suddenExpenses(): HasMany
+    {
+        return $this->hasMany(SuddenExpense::class);
     }
 
     /**
@@ -87,18 +93,47 @@ class Trip extends Model
      */
     public function calculateBudget(): array
     {
-        $activities = $this->activities()->get();
+        $planBudget = (float) ($this->plan_budget ?? 0);
 
+        $activities = $this->activities()->get();
         $totalEstimated = $activities->where('is_unplanned', false)->sum('estimated_cost');
-        $totalActual = $activities->where('status', 'completed')->sum('actual_cost');
-        $variance = $totalActual - $totalEstimated;
+        $totalActualFromActivities = $activities->where('status', 'completed')->sum('actual_cost');
+
+        $totalSuddenExpenses = $this->suddenExpenses()->sum('amount');
+        $totalActual = $totalActualFromActivities + $totalSuddenExpenses;
+
+        $variance = $totalActual - $planBudget;
+
+        // Budget status calculation with 5% margin
+        $margin = 0.05;
+        $lowerThreshold = $planBudget * (1 - $margin);
+        $upperThreshold = $planBudget * (1 + $margin);
+
+        $isOverbudget = $totalActual > $upperThreshold;
+        $isUnderbudget = $totalActual < $lowerThreshold;
 
         return [
-            'total_estimated' => (float) $totalEstimated,
+            'plan_budget' => $planBudget,
+            'total_actual_activities' => (float) $totalActualFromActivities,
+            'total_sudden_expenses' => (float) $totalSuddenExpenses,
             'total_actual' => (float) $totalActual,
             'variance' => (float) $variance,
-            'is_overbudget' => $variance > 0,
+            'is_overbudget' => $isOverbudget,
+            'is_underbudget' => $isUnderbudget,
+            'status' => $this->calculateBudgetStatus($totalActual, $planBudget, $lowerThreshold, $upperThreshold),
         ];
+    }
+
+    private function calculateBudgetStatus(float $totalActual, float $planBudget, float $lowerThreshold, float $upperThreshold): string
+    {
+        if ($planBudget == 0) return 'on_budget';
+        if ($totalActual >= $lowerThreshold && $totalActual <= $upperThreshold) {
+            return 'on_budget';
+        }
+        if ($totalActual < $lowerThreshold) {
+            return 'underbudget';
+        }
+        return 'deficit';
     }
 
     /**
