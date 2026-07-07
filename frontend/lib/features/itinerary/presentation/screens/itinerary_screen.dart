@@ -19,15 +19,25 @@ class ItineraryScreen extends ConsumerStatefulWidget {
 }
 
 class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
+  bool _initialLoadDone = false;
+
   @override
   void initState() {
     super.initState();
-    // Load data without blocking UI - will show cached data immediately if available
-    ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+    // Load only once when screen first opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  void _loadData() {
+    if (!_initialLoadDone) {
+      _initialLoadDone = true;
+      ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+    }
   }
 
   Future<void> _refresh() async {
-    // Force refresh from network
     await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId, forceRefresh: true);
   }
 
@@ -101,8 +111,8 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   Widget build(BuildContext context) {
     final data = ref.watch(itineraryNotifierProvider);
 
-    // Show loading only on first load with no data
-    if (data == null) {
+    // Show loading only on first app open with no cache
+    if (data == null && !_initialLoadDone) {
       return Scaffold(
         appBar: AppBar(title: const Text('Itinerary')),
         body: const Center(
@@ -116,6 +126,15 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           ),
         ),
       );
+    }
+
+    // If no data yet, start loading in background and show empty
+    if (data == null) {
+      // Trigger loading if not started
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadData();
+      });
+      return _buildEmptyState();
     }
 
     // Hitung statistik dari data lokal
@@ -288,6 +307,33 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         icon: const Icon(Icons.flash_on),
         label: const Text('Pengeluaran Mendadak'),
         backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Itinerary')),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          children: [
+            const SizedBox(height: 100),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Memuat itinerary...',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
