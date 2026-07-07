@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class MemberAvatar extends StatelessWidget {
   final String name;
+  final String? avatar;
   final double size;
   final Color? backgroundColor;
 
   const MemberAvatar({
     super.key,
     required this.name,
+    this.avatar,
     this.size = 40,
     this.backgroundColor,
   });
@@ -15,6 +18,19 @@ class MemberAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+    // Try to show avatar if available
+    if (avatar != null && avatar!.isNotEmpty) {
+      try {
+        final bytes = base64Decode(avatar!);
+        return CircleAvatar(
+          radius: size / 2,
+          backgroundImage: MemoryImage(bytes),
+        );
+      } catch (_) {
+        // Fallback to initials
+      }
+    }
 
     return CircleAvatar(
       radius: size / 2,

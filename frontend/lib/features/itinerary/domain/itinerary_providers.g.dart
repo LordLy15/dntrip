@@ -653,7 +653,7 @@ class _ActivityTimeStatsProviderElement
   int get tripId => (origin as ActivityTimeStatsProvider).tripId;
 }
 
-String _$itineraryNotifierHash() => r'c01e6a9d90dee3b8fc46a9cf7ee7479f0de46550';
+String _$itineraryNotifierHash() => r'f00629ed3d2b66530e98a2066c0b8074740f580f';
 
 /// See also [ItineraryNotifier].
 @ProviderFor(ItineraryNotifier)

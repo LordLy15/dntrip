@@ -97,9 +97,52 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'avatar' => $user->avatar,
                     'created_at' => $user->created_at->toISOString(),
                 ],
             ],
+        ]);
+    }
+
+    /**
+     * Update current user profile
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'avatar' => 'sometimes|string',
+        ]);
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+
+        if (isset($validated['email'])) {
+            $user->email = $validated['email'];
+        }
+
+        if (isset($validated['avatar'])) {
+            $user->avatar = $validated['avatar'];
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                    'created_at' => $user->created_at->toISOString(),
+                ],
+            ],
+            'message' => 'Profile updated successfully',
         ]);
     }
 }

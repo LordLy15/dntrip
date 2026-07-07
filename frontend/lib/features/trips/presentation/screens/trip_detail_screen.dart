@@ -195,7 +195,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
               else
                 ...trip.members.map((m) => ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: MemberAvatar(name: m.name ?? '?'),
+                  leading: MemberAvatar(name: m.name ?? '?', avatar: m.avatar),
                   title: Text(m.name ?? 'Unknown'),
                   subtitle: Text(m.email ?? ''),
                   trailing: Container(

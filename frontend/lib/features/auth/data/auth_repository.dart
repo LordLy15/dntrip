@@ -58,5 +58,19 @@ class AuthRepository {
     return null;
   }
 
+  Future<UserModel> updateProfile({
+    String? name,
+    String? email,
+    String? avatarBase64,
+  }) async {
+    final user = await _remoteDatasource.updateProfile(
+      name: name,
+      email: email,
+      avatarBase64: avatarBase64,
+    );
+    await _storage.saveUser(user.toJson());
+    return user;
+  }
+
   bool isLoggedIn() => _storage.isLoggedIn();
 }

@@ -19,24 +19,16 @@ class ItineraryScreen extends ConsumerStatefulWidget {
 }
 
 class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
-  bool _isInitialLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isInitialLoading = true);
-    await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
-    if (mounted) {
-      setState(() => _isInitialLoading = false);
-    }
+    // Load data without blocking UI - will show cached data immediately if available
+    ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
   }
 
   Future<void> _refresh() async {
-    await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+    // Force refresh from network
+    await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId, forceRefresh: true);
   }
 
   void _showCompleteSheet(int activityId) {
@@ -109,8 +101,8 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   Widget build(BuildContext context) {
     final data = ref.watch(itineraryNotifierProvider);
 
-    // Initial loading
-    if (_isInitialLoading || data == null) {
+    // Show loading only on first load with no data
+    if (data == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Itinerary')),
         body: const Center(

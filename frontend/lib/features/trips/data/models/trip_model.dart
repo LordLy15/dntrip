@@ -57,6 +57,7 @@ class TripModel with _$TripModel {
       owner: TripOwner(
         id: (json['owner'] as Map<String, dynamic>?)?['id'] as int? ?? 0,
         name: (json['owner'] as Map<String, dynamic>?)?['name'] as String?,
+        avatar: (json['owner'] as Map<String, dynamic>?)?['avatar'] as String?,
       ),
       members: members,
       membersCount: members.length,
@@ -72,6 +73,7 @@ class TripOwner with _$TripOwner {
   const factory TripOwner({
     required int id,
     String? name,
+    String? avatar,
   }) = _TripOwner;
 
   factory TripOwner.fromJson(Map<String, dynamic> json) =>

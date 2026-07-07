@@ -12,7 +12,9 @@ use Illuminate\Http\Request;
 class ItineraryController extends Controller
 {
     /**
-     * Get trip days with activities and budget summary
+     * Get trip days with activities
+     * Note: Budget summary removed to improve loading performance.
+     * Frontend calculates budget locally from activities data.
      */
     public function index(Request $request, int $tripId): JsonResponse
     {
@@ -44,7 +46,6 @@ class ItineraryController extends Controller
             'status' => 'success',
             'data' => [
                 'trip_id' => $trip->id,
-                'budget_summary' => $trip->calculateBudget(),
                 'days' => $days,
             ],
         ]);
@@ -116,7 +117,6 @@ class ItineraryController extends Controller
             'status' => 'success',
             'data' => [
                 'activity' => $this->formatActivity($activity->fresh()),
-                'budget_summary' => $trip->fresh()->calculateBudget(),
             ],
             'message' => 'Activity updated successfully',
         ]);
@@ -146,7 +146,6 @@ class ItineraryController extends Controller
             'status' => 'success',
             'data' => [
                 'activity' => $this->formatActivity($activity->fresh()),
-                'budget_summary' => $trip->fresh()->calculateBudget(),
             ],
             'message' => 'Activity marked as completed',
         ]);

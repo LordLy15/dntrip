@@ -511,6 +511,7 @@ TripOwner _$TripOwnerFromJson(Map<String, dynamic> json) {
 mixin _$TripOwner {
   int get id => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
+  String? get avatar => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -523,7 +524,7 @@ abstract class $TripOwnerCopyWith<$Res> {
   factory $TripOwnerCopyWith(TripOwner value, $Res Function(TripOwner) then) =
       _$TripOwnerCopyWithImpl<$Res, TripOwner>;
   @useResult
-  $Res call({int id, String? name});
+  $Res call({int id, String? name, String? avatar});
 }
 
 /// @nodoc
@@ -541,6 +542,7 @@ class _$TripOwnerCopyWithImpl<$Res, $Val extends TripOwner>
   $Res call({
     Object? id = null,
     Object? name = freezed,
+    Object? avatar = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -550,6 +552,10 @@ class _$TripOwnerCopyWithImpl<$Res, $Val extends TripOwner>
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -563,7 +569,7 @@ abstract class _$$TripOwnerImplCopyWith<$Res>
       __$$TripOwnerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String? name});
+  $Res call({int id, String? name, String? avatar});
 }
 
 /// @nodoc
@@ -579,6 +585,7 @@ class __$$TripOwnerImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = freezed,
+    Object? avatar = freezed,
   }) {
     return _then(_$TripOwnerImpl(
       id: null == id
@@ -589,6 +596,10 @@ class __$$TripOwnerImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -596,7 +607,7 @@ class __$$TripOwnerImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TripOwnerImpl implements _TripOwner {
-  const _$TripOwnerImpl({required this.id, this.name});
+  const _$TripOwnerImpl({required this.id, this.name, this.avatar});
 
   factory _$TripOwnerImpl.fromJson(Map<String, dynamic> json) =>
       _$$TripOwnerImplFromJson(json);
@@ -605,10 +616,12 @@ class _$TripOwnerImpl implements _TripOwner {
   final int id;
   @override
   final String? name;
+  @override
+  final String? avatar;
 
   @override
   String toString() {
-    return 'TripOwner(id: $id, name: $name)';
+    return 'TripOwner(id: $id, name: $name, avatar: $avatar)';
   }
 
   @override
@@ -617,12 +630,13 @@ class _$TripOwnerImpl implements _TripOwner {
         (other.runtimeType == runtimeType &&
             other is _$TripOwnerImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name);
+  int get hashCode => Object.hash(runtimeType, id, name, avatar);
 
   @JsonKey(ignore: true)
   @override
@@ -639,8 +653,10 @@ class _$TripOwnerImpl implements _TripOwner {
 }
 
 abstract class _TripOwner implements TripOwner {
-  const factory _TripOwner({required final int id, final String? name}) =
-      _$TripOwnerImpl;
+  const factory _TripOwner(
+      {required final int id,
+      final String? name,
+      final String? avatar}) = _$TripOwnerImpl;
 
   factory _TripOwner.fromJson(Map<String, dynamic> json) =
       _$TripOwnerImpl.fromJson;
@@ -649,6 +665,8 @@ abstract class _TripOwner implements TripOwner {
   int get id;
   @override
   String? get name;
+  @override
+  String? get avatar;
   @override
   @JsonKey(ignore: true)
   _$$TripOwnerImplCopyWith<_$TripOwnerImpl> get copyWith =>

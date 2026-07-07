@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../auth/domain/auth_providers.dart';
 import '../../../../core/theme/theme_provider.dart';
 
@@ -20,19 +23,108 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _newPasswordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
 
+  final _nameCtrl = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void dispose() {
     _currentPasswordCtrl.dispose();
     _newPasswordCtrl.dispose();
     _confirmPasswordCtrl.dispose();
+    _nameCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadAvatar() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
+      );
+
+      if (image == null) return;
+
+      // Show loading
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Mengunggah foto...')),
+        );
+      }
+
+      // Convert to base64
+      final bytes = await image.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      // Update profile
+      await ref.read(authNotifierProvider.notifier).updateProfile(
+        avatarBase64: base64Image,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Foto profil berhasil diperbarui!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal upload foto: $e')),
+        );
+      }
+    }
+  }
+
+  void _showEditNameDialog(String currentName) {
+    _nameCtrl.text = currentName;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ubah Nama'),
+        content: TextField(
+          controller: _nameCtrl,
+          decoration: const InputDecoration(
+            labelText: 'Nama',
+            hintText: 'Masukkan nama baru',
+          ),
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (_nameCtrl.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Nama tidak boleh kosong')),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              await ref.read(authNotifierProvider.notifier).updateProfile(
+                name: _nameCtrl.text.trim(),
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Nama berhasil diperbarui!')),
+                );
+              }
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showChangePasswordDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
+        title: const Text('Ubah Password'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -40,7 +132,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _currentPasswordCtrl,
               obscureText: _obscurePassword,
               decoration: InputDecoration(
-                labelText: 'Current Password',
+                labelText: 'Password Saat Ini',
                 suffixIcon: IconButton(
                   icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                   onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -52,7 +144,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _newPasswordCtrl,
               obscureText: _obscureNewPassword,
               decoration: InputDecoration(
-                labelText: 'New Password',
+                labelText: 'Password Baru',
                 suffixIcon: IconButton(
                   icon: Icon(_obscureNewPassword ? Icons.visibility : Icons.visibility_off),
                   onPressed: () => setState(() => _obscureNewPassword = !_obscureNewPassword),
@@ -64,7 +156,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _confirmPasswordCtrl,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Confirm New Password',
+                labelText: 'Konfirmasi Password Baru',
               ),
             ),
           ],
@@ -72,7 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Batal'),
           ),
           ElevatedButton(
             onPressed: _isLoading ? null : _changePassword,
@@ -82,7 +174,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Change'),
+                : const Text('Ubah'),
           ),
         ],
       ),
@@ -92,14 +184,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _changePassword() async {
     if (_newPasswordCtrl.text != _confirmPasswordCtrl.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(content: Text('Password tidak cocok')),
       );
       return;
     }
 
     if (_newPasswordCtrl.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 8 characters')),
+        const SnackBar(content: Text('Password minimal 8 karakter')),
       );
       return;
     }
@@ -107,13 +199,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // In a real app, call API to change password
+      // TODO: Implement API call for password change
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password changed successfully!')),
+          const SnackBar(content: Text('Password berhasil diubah!')),
         );
         _currentPasswordCtrl.clear();
         _newPasswordCtrl.clear();
@@ -135,11 +227,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Batal'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -160,6 +252,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  Widget _buildAvatar(String name, String? avatarUrl) {
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      try {
+        final bytes = base64Decode(avatarUrl);
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: MemoryImage(bytes),
+        );
+      } catch (_) {
+        // Fallback to initials
+      }
+    }
+    return CircleAvatar(
+      radius: 50,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      child: Text(
+        (name.isNotEmpty ? name[0] : '?').toUpperCase(),
+        style: const TextStyle(
+          fontSize: 40,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeNotifierProvider);
@@ -167,7 +285,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Pengaturan'),
       ),
       body: ListView(
         children: [
@@ -176,49 +294,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             builder: (context, ref, child) {
               final authState = ref.watch(authNotifierProvider);
 
-              // Safe extraction with null checks
               String name = '';
               String email = '';
-              try {
-                name = authState.whenOrNull(
-                  data: (state) {
-                    if (state is Authenticated && (state.user.name?.isNotEmpty ?? false)) {
-                      return state.user.name ?? '';
-                    }
-                    return '';
-                  },
-                ) ?? '';
+              String? avatar;
 
-                email = authState.whenOrNull(
-                  data: (state) {
-                    if (state is Authenticated) {
-                      return state.user.email ?? '';
-                    }
-                    return '';
-                  },
-                ) ?? '';
-              } catch (e) {
-                // Use defaults on error
-              }
+              authState.whenData((state) {
+                if (state is Authenticated) {
+                  name = state.user.name ?? '';
+                  email = state.user.email ?? '';
+                  avatar = state.user.avatar;
+                }
+              });
 
               return Column(
                 children: [
                   const SizedBox(height: 20),
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: Text(
-                      (name.isNotEmpty ? name[0] : '?').toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 32,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                  Stack(
+                    children: [
+                      _buildAvatar(name, avatar),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickAndUploadAvatar,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    name,
+                    name.isNotEmpty ? name : 'Pengguna',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -238,11 +356,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 24),
           const Divider(),
 
+          // Edit Profile Section
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Edit Profil',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Consumer(
+            builder: (context, ref, child) {
+              final authState = ref.watch(authNotifierProvider);
+              String name = '';
+              authState.whenData((state) {
+                if (state is Authenticated) {
+                  name = state.user.name ?? '';
+                }
+              });
+
+              return ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: const Text('Ubah Nama'),
+                subtitle: Text(name.isNotEmpty ? name : 'Belum diatur'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showEditNameDialog(name),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: const Text('Ubah Foto Profil'),
+            subtitle: const Text('Pilih foto dari galeri'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _pickAndUploadAvatar,
+          ),
+
+          const Divider(),
+
           // Appearance Section
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Appearance',
+              'Tampilan',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -255,8 +415,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               isDarkMode ? Icons.dark_mode : Icons.light_mode,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Dark Mode'),
-            subtitle: Text(isDarkMode ? 'Dark theme enabled' : 'Light theme enabled'),
+            title: const Text('Mode Gelap'),
+            subtitle: Text(isDarkMode ? 'Tema gelap aktif' : 'Tema terang aktif'),
             value: isDarkMode,
             onChanged: (value) {
               ref.read(themeNotifierProvider.notifier).toggleTheme();
@@ -269,7 +429,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Account',
+              'Akun',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -279,8 +439,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           ListTile(
             leading: const Icon(Icons.lock_outline),
-            title: const Text('Change Password'),
-            subtitle: const Text('Update your account password'),
+            title: const Text('Ubah Password'),
+            subtitle: const Text('Update password akun Anda'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showChangePasswordDialog,
           ),
@@ -288,15 +448,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.delete_outline, color: Colors.red),
             title: const Text(
-              'Delete Account',
+              'Hapus Akun',
               style: TextStyle(color: Colors.red),
             ),
-            subtitle: const Text('Permanently delete your account'),
+            subtitle: const Text('Hapus akun secara permanen'),
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Contact support to delete your account'),
+                  content: Text('Hubungi support untuk menghapus akun'),
                 ),
               );
             },
@@ -308,7 +468,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Actions',
+              'Aksi',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -339,7 +499,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Made with ❤️',
+                  'Dibuat dengan ❤️',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
                   ),

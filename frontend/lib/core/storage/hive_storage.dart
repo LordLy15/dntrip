@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../constants/app_constants.dart';
 
@@ -37,6 +38,38 @@ class HiveStorage {
 
   Future<void> clearUser() async {
     await _box.delete(AppConstants.userKey);
+  }
+
+  // Itinerary cache operations
+  static const String _itineraryPrefix = 'itinerary_';
+
+  Future<void> saveItinerary(int tripId, Map<String, dynamic> data) async {
+    final key = '$_itineraryPrefix$tripId';
+    await _box.put(key, jsonEncode(data));
+    await _box.put('${key}_time', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  Map<String, dynamic>? getItinerary(int tripId) {
+    final key = '$_itineraryPrefix$tripId';
+    final data = _box.get(key);
+    if (data != null) {
+      return Map<String, dynamic>.from(jsonDecode(data));
+    }
+    return null;
+  }
+
+  bool isItineraryCacheValid(int tripId, {Duration maxAge = const Duration(minutes: 30)}) {
+    final key = '$_itineraryPrefix$tripId';
+    final time = _box.get('${key}_time') as int?;
+    if (time == null) return false;
+    final age = DateTime.now().millisecondsSinceEpoch - time;
+    return Duration(milliseconds: age) < maxAge;
+  }
+
+  Future<void> clearItinerary(int tripId) async {
+    final key = '$_itineraryPrefix$tripId';
+    await _box.delete(key);
+    await _box.delete('${key}_time');
   }
 
   // Clear all auth data

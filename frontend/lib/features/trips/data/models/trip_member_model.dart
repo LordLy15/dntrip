@@ -11,6 +11,7 @@ class TripMemberModel with _$TripMemberModel {
     required int id,
     String? name,
     String? email,
+    String? avatar,
     String? role,
   }) = _TripMemberModel;
 
@@ -27,6 +28,7 @@ class TripMemberModel with _$TripMemberModel {
       id: json['id'] as int,
       name: user?['name'] as String?,
       email: user?['email'] as String?,
+      avatar: user?['avatar'] as String?,
       role: json['role'] as String?,
     );
   }
