@@ -393,7 +393,7 @@ class _CustomCategoryProviderElement
   String? get description => (origin as CustomCategoryProvider).description;
 }
 
-String _$budgetSummaryHash() => r'a958b28555a26f4709990674d7f1e9f77703c85e';
+String _$budgetSummaryHash() => r'7267d3e483f3c87b81d6fd510160498c0ab33f28';
 
 /// See also [budgetSummary].
 @ProviderFor(budgetSummary)
@@ -523,137 +523,7 @@ class _BudgetSummaryProviderElement
   int get tripId => (origin as BudgetSummaryProvider).tripId;
 }
 
-String _$activityTimeStatsHash() => r'a5eac34de2e6385e28cde3d1c3e93ab0206e8d9a';
-
-/// See also [activityTimeStats].
-@ProviderFor(activityTimeStats)
-const activityTimeStatsProvider = ActivityTimeStatsFamily();
-
-/// See also [activityTimeStats].
-class ActivityTimeStatsFamily extends Family<AsyncValue<Map<String, int>>> {
-  /// See also [activityTimeStats].
-  const ActivityTimeStatsFamily();
-
-  /// See also [activityTimeStats].
-  ActivityTimeStatsProvider call(
-    int tripId,
-  ) {
-    return ActivityTimeStatsProvider(
-      tripId,
-    );
-  }
-
-  @override
-  ActivityTimeStatsProvider getProviderOverride(
-    covariant ActivityTimeStatsProvider provider,
-  ) {
-    return call(
-      provider.tripId,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'activityTimeStatsProvider';
-}
-
-/// See also [activityTimeStats].
-class ActivityTimeStatsProvider
-    extends AutoDisposeFutureProvider<Map<String, int>> {
-  /// See also [activityTimeStats].
-  ActivityTimeStatsProvider(
-    int tripId,
-  ) : this._internal(
-          (ref) => activityTimeStats(
-            ref as ActivityTimeStatsRef,
-            tripId,
-          ),
-          from: activityTimeStatsProvider,
-          name: r'activityTimeStatsProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$activityTimeStatsHash,
-          dependencies: ActivityTimeStatsFamily._dependencies,
-          allTransitiveDependencies:
-              ActivityTimeStatsFamily._allTransitiveDependencies,
-          tripId: tripId,
-        );
-
-  ActivityTimeStatsProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.tripId,
-  }) : super.internal();
-
-  final int tripId;
-
-  @override
-  Override overrideWith(
-    FutureOr<Map<String, int>> Function(ActivityTimeStatsRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: ActivityTimeStatsProvider._internal(
-        (ref) => create(ref as ActivityTimeStatsRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        tripId: tripId,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<Map<String, int>> createElement() {
-    return _ActivityTimeStatsProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ActivityTimeStatsProvider && other.tripId == tripId;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, tripId.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin ActivityTimeStatsRef on AutoDisposeFutureProviderRef<Map<String, int>> {
-  /// The parameter `tripId` of this provider.
-  int get tripId;
-}
-
-class _ActivityTimeStatsProviderElement
-    extends AutoDisposeFutureProviderElement<Map<String, int>>
-    with ActivityTimeStatsRef {
-  _ActivityTimeStatsProviderElement(super.provider);
-
-  @override
-  int get tripId => (origin as ActivityTimeStatsProvider).tripId;
-}
-
-String _$itineraryNotifierHash() => r'72a25d7dffb3a9cedb37251ddbe01e2830ab3914';
+String _$itineraryNotifierHash() => r'6dfe640b5dbe4f749e947cd3d09c0243ee72668b';
 
 /// See also [ItineraryNotifier].
 @ProviderFor(ItineraryNotifier)

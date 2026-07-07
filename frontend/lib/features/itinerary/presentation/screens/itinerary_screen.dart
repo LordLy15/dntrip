@@ -38,7 +38,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   }
 
   Future<void> _refresh() async {
-    await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId, forceRefresh: true);
+    await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
   }
 
   void _showCompleteSheet(int activityId) {
