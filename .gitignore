@@ -44,3 +44,6 @@ composer.phar
 
 # Misc
 *.log
+
+.vercel
+.env*

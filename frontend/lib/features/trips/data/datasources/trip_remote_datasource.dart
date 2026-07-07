@@ -136,7 +136,7 @@ class TripRemoteDatasource {
 
     return membersData
         .map((e) => e as Map<String, dynamic>)
-        .map((e) => TripMemberModel.fromNestedJson(e))
+        .map((e) => TripMemberModel.fromFlatJson(e))
         .toList();
   }
 

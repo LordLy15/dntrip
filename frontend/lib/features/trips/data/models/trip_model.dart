@@ -37,12 +37,12 @@ class TripModel with _$TripModel {
   factory TripModel.fromJson(Map<String, dynamic> json) =>
       _$TripModelFromJson(json);
 
-  /// Create from API response with nested members
+  /// Create from API response with flat members
   static TripModel fromApiResponse(Map<String, dynamic> json) {
-    // Handle members array with nested user structure
+    // Handle members array with flat user structure (name, email, avatar at top level)
     final membersJson = json['members'] as List?;
     final members = membersJson
-        ?.map((m) => TripMemberModel.fromNestedJson(m as Map<String, dynamic>))
+        ?.map((m) => TripMemberModel.fromFlatJson(m as Map<String, dynamic>))
         .toList() ?? [];
 
     return TripModel(

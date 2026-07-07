@@ -21,7 +21,7 @@ class TripMemberModel with _$TripMemberModel {
   bool get isOwner => role == 'owner';
   bool get isEditor => role == 'owner' || role == 'editor';
 
-  /// Create from nested user structure
+  /// Create from nested user structure (if user data is nested)
   static TripMemberModel fromNestedJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     return TripMemberModel(
@@ -29,6 +29,17 @@ class TripMemberModel with _$TripMemberModel {
       name: user?['name'] as String?,
       email: user?['email'] as String?,
       avatar: user?['avatar'] as String?,
+      role: json['role'] as String?,
+    );
+  }
+
+  /// Create from flat user structure (data at top level)
+  static TripMemberModel fromFlatJson(Map<String, dynamic> json) {
+    return TripMemberModel(
+      id: json['id'] as int,
+      name: json['name'] as String?,
+      email: json['email'] as String?,
+      avatar: json['avatar'] as String?,
       role: json['role'] as String?,
     );
   }
