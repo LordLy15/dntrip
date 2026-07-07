@@ -95,7 +95,35 @@ class TripController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => ['trip' => $trip],
+            'data' => [
+                'trip' => [
+                    'id' => $trip->id,
+                    'title' => $trip->title,
+                    'destination' => $trip->destination,
+                    'description' => $trip->description,
+                    'start_date' => $trip->start_date?->format('Y-m-d'),
+                    'end_date' => $trip->end_date?->format('Y-m-d'),
+                    'share_code' => $trip->share_code,
+                    'status' => $trip->status,
+                    'plan_budget' => $trip->plan_budget,
+                    'owner' => [
+                        'id' => $trip->owner->id,
+                        'name' => $trip->owner->name,
+                        'avatar' => $trip->owner->avatar,
+                    ],
+                    'members' => $trip->members->map(function ($m) {
+                        return [
+                            'id' => $m->id,
+                            'user_id' => $m->user->id,
+                            'name' => $m->user->name,
+                            'email' => $m->user->email,
+                            'avatar' => $m->user->avatar,
+                            'role' => $m->role,
+                            'joined_at' => $m->joined_at,
+                        ];
+                    }),
+                ],
+            ],
         ]);
     }
 
@@ -241,6 +269,7 @@ class TripController extends Controller
                     'id' => $m->user->id,
                     'name' => $m->user->name,
                     'email' => $m->user->email,
+                    'avatar' => $m->user->avatar,
                     'role' => $m->role,
                 ];
             })],

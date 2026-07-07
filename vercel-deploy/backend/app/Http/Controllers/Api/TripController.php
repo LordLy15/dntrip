@@ -241,6 +241,7 @@ class TripController extends Controller
                     'id' => $m->user->id,
                     'name' => $m->user->name,
                     'email' => $m->user->email,
+                    'avatar' => $m->user->avatar,
                     'role' => $m->role,
                 ];
             })],

@@ -59,7 +59,7 @@ final itineraryRepositoryProvider =
 );
 
 typedef ItineraryRepositoryRef = AutoDisposeProviderRef<ItineraryRepository>;
-String _$suddenExpensesHash() => r'2f200dc5b624bc47971eaa4563659fa042f6ef7d';
+String _$suddenExpensesHash() => r'ed71200d080c0fe471ba2198f84b0b6ce5c435b5';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -213,7 +213,7 @@ class _SuddenExpensesProviderElement
   int get tripId => (origin as SuddenExpensesProvider).tripId;
 }
 
-String _$expenseCategoriesHash() => r'f15bbc6f1be6d370bb5f8bd3171045a496425a93';
+String _$expenseCategoriesHash() => r'ac7ff5cf84be7afdc52d5afb062935aff92bc64f';
 
 /// See also [expenseCategories].
 @ProviderFor(expenseCategories)
@@ -230,7 +230,7 @@ final expenseCategoriesProvider =
 
 typedef ExpenseCategoriesRef
     = AutoDisposeFutureProviderRef<List<ExpenseCategory>>;
-String _$customCategoryHash() => r'bbd2bcc4e51bd7877700324bab81456d712291bf';
+String _$customCategoryHash() => r'6c4b26cbc0b150cf307e73ab1a77266adf6e5b51';
 
 /// See also [customCategory].
 @ProviderFor(customCategory)
@@ -393,7 +393,7 @@ class _CustomCategoryProviderElement
   String? get description => (origin as CustomCategoryProvider).description;
 }
 
-String _$budgetSummaryHash() => r'4e41baa4df14d7b5ec1f1b616d5aaff13cec3e7b';
+String _$budgetSummaryHash() => r'a958b28555a26f4709990674d7f1e9f77703c85e';
 
 /// See also [budgetSummary].
 @ProviderFor(budgetSummary)
@@ -523,7 +523,7 @@ class _BudgetSummaryProviderElement
   int get tripId => (origin as BudgetSummaryProvider).tripId;
 }
 
-String _$activityTimeStatsHash() => r'3e3e31ae67ec07e5037afa78270fd549b5ed68db';
+String _$activityTimeStatsHash() => r'a5eac34de2e6385e28cde3d1c3e93ab0206e8d9a';
 
 /// See also [activityTimeStats].
 @ProviderFor(activityTimeStats)
@@ -653,7 +653,7 @@ class _ActivityTimeStatsProviderElement
   int get tripId => (origin as ActivityTimeStatsProvider).tripId;
 }
 
-String _$itineraryNotifierHash() => r'f00629ed3d2b66530e98a2066c0b8074740f580f';
+String _$itineraryNotifierHash() => r'72a25d7dffb3a9cedb37251ddbe01e2830ab3914';
 
 /// See also [ItineraryNotifier].
 @ProviderFor(ItineraryNotifier)
@@ -670,7 +670,7 @@ final itineraryNotifierProvider =
 
 typedef _$ItineraryNotifier = AutoDisposeNotifier<ItineraryData?>;
 String _$suddenExpenseNotifierHash() =>
-    r'6e323a84834c1d9d3f9e42c44f325f7d5821c4e4';
+    r'6c4b91ebf03c99367613c93904d5f5ba887fe0e3';
 
 abstract class _$SuddenExpenseNotifier
     extends BuildlessAutoDisposeAsyncNotifier<List<SuddenExpenseModel>> {
