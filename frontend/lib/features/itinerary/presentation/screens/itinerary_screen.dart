@@ -156,6 +156,30 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     }
   }
 
+  void _showSuddenExpenseSheet() {
+    final data = ref.read(itineraryNotifierProvider);
+    if (data == null) return;
+
+    double totalActual = 0;
+    for (final day in data.days) {
+      for (final a in day.activities) {
+        if (a.isCompleted) {
+          totalActual += a.actualCost ?? 0;
+        }
+      }
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => SuddenExpenseSheet(
+        tripId: widget.tripId,
+        planBudget: 0,
+        currentTotal: totalActual,
+      ),
+    );
+  }
+
   void _navigateToAddActivity(int tripDayId) {
     context.push('/trips/${widget.tripId}/activities/new?dayId=$tripDayId');
   }
@@ -167,7 +191,16 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     // Show loading spinner while data is null
     if (data == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Itinerary')),
+        appBar: AppBar(
+          title: const Text('Itinerary'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.account_balance_wallet),
+              onPressed: _showSuddenExpenseSheet,
+              tooltip: 'Pengeluaran Mendadak',
+            ),
+          ],
+        ),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
