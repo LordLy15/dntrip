@@ -24,8 +24,26 @@ final itineraryRemoteDatasourceProvider =
 
 typedef ItineraryRemoteDatasourceRef
     = AutoDisposeProviderRef<ItineraryRemoteDatasource>;
+String _$suddenExpenseRemoteDatasourceHash() =>
+    r'2b2bf9e622a441c9b63afbb0cc5e088fd58644ec';
+
+/// See also [suddenExpenseRemoteDatasource].
+@ProviderFor(suddenExpenseRemoteDatasource)
+final suddenExpenseRemoteDatasourceProvider =
+    AutoDisposeProvider<SuddenExpenseRemoteDatasource>.internal(
+  suddenExpenseRemoteDatasource,
+  name: r'suddenExpenseRemoteDatasourceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$suddenExpenseRemoteDatasourceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef SuddenExpenseRemoteDatasourceRef
+    = AutoDisposeProviderRef<SuddenExpenseRemoteDatasource>;
 String _$itineraryRepositoryHash() =>
-    r'2345a00cc64bba4abbbe4570fc93d8b07a7b8ad0';
+    r'8f4402a569cfb94b9fc326809a20c72dfe35c07c';
 
 /// See also [itineraryRepository].
 @ProviderFor(itineraryRepository)
@@ -41,7 +59,471 @@ final itineraryRepositoryProvider =
 );
 
 typedef ItineraryRepositoryRef = AutoDisposeProviderRef<ItineraryRepository>;
-String _$itineraryNotifierHash() => r'c01e6a9d90dee3b8fc46a9cf7ee7479f0de46550';
+String _$suddenExpensesHash() => r'ed71200d080c0fe471ba2198f84b0b6ce5c435b5';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
+/// See also [suddenExpenses].
+@ProviderFor(suddenExpenses)
+const suddenExpensesProvider = SuddenExpensesFamily();
+
+/// See also [suddenExpenses].
+class SuddenExpensesFamily
+    extends Family<AsyncValue<List<SuddenExpenseModel>>> {
+  /// See also [suddenExpenses].
+  const SuddenExpensesFamily();
+
+  /// See also [suddenExpenses].
+  SuddenExpensesProvider call(
+    int tripId,
+  ) {
+    return SuddenExpensesProvider(
+      tripId,
+    );
+  }
+
+  @override
+  SuddenExpensesProvider getProviderOverride(
+    covariant SuddenExpensesProvider provider,
+  ) {
+    return call(
+      provider.tripId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'suddenExpensesProvider';
+}
+
+/// See also [suddenExpenses].
+class SuddenExpensesProvider
+    extends AutoDisposeFutureProvider<List<SuddenExpenseModel>> {
+  /// See also [suddenExpenses].
+  SuddenExpensesProvider(
+    int tripId,
+  ) : this._internal(
+          (ref) => suddenExpenses(
+            ref as SuddenExpensesRef,
+            tripId,
+          ),
+          from: suddenExpensesProvider,
+          name: r'suddenExpensesProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$suddenExpensesHash,
+          dependencies: SuddenExpensesFamily._dependencies,
+          allTransitiveDependencies:
+              SuddenExpensesFamily._allTransitiveDependencies,
+          tripId: tripId,
+        );
+
+  SuddenExpensesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tripId,
+  }) : super.internal();
+
+  final int tripId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<SuddenExpenseModel>> Function(SuddenExpensesRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SuddenExpensesProvider._internal(
+        (ref) => create(ref as SuddenExpensesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tripId: tripId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<SuddenExpenseModel>> createElement() {
+    return _SuddenExpensesProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SuddenExpensesProvider && other.tripId == tripId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tripId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin SuddenExpensesRef
+    on AutoDisposeFutureProviderRef<List<SuddenExpenseModel>> {
+  /// The parameter `tripId` of this provider.
+  int get tripId;
+}
+
+class _SuddenExpensesProviderElement
+    extends AutoDisposeFutureProviderElement<List<SuddenExpenseModel>>
+    with SuddenExpensesRef {
+  _SuddenExpensesProviderElement(super.provider);
+
+  @override
+  int get tripId => (origin as SuddenExpensesProvider).tripId;
+}
+
+String _$expenseCategoriesHash() => r'ac7ff5cf84be7afdc52d5afb062935aff92bc64f';
+
+/// See also [expenseCategories].
+@ProviderFor(expenseCategories)
+final expenseCategoriesProvider =
+    AutoDisposeFutureProvider<List<ExpenseCategory>>.internal(
+  expenseCategories,
+  name: r'expenseCategoriesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$expenseCategoriesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ExpenseCategoriesRef
+    = AutoDisposeFutureProviderRef<List<ExpenseCategory>>;
+String _$customCategoryHash() => r'6c4b26cbc0b150cf307e73ab1a77266adf6e5b51';
+
+/// See also [customCategory].
+@ProviderFor(customCategory)
+const customCategoryProvider = CustomCategoryFamily();
+
+/// See also [customCategory].
+class CustomCategoryFamily extends Family<AsyncValue<ExpenseCategory>> {
+  /// See also [customCategory].
+  const CustomCategoryFamily();
+
+  /// See also [customCategory].
+  CustomCategoryProvider call({
+    required String categoryName,
+    String icon = 'category',
+    String? description,
+  }) {
+    return CustomCategoryProvider(
+      categoryName: categoryName,
+      icon: icon,
+      description: description,
+    );
+  }
+
+  @override
+  CustomCategoryProvider getProviderOverride(
+    covariant CustomCategoryProvider provider,
+  ) {
+    return call(
+      categoryName: provider.categoryName,
+      icon: provider.icon,
+      description: provider.description,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'customCategoryProvider';
+}
+
+/// See also [customCategory].
+class CustomCategoryProvider
+    extends AutoDisposeFutureProvider<ExpenseCategory> {
+  /// See also [customCategory].
+  CustomCategoryProvider({
+    required String categoryName,
+    String icon = 'category',
+    String? description,
+  }) : this._internal(
+          (ref) => customCategory(
+            ref as CustomCategoryRef,
+            categoryName: categoryName,
+            icon: icon,
+            description: description,
+          ),
+          from: customCategoryProvider,
+          name: r'customCategoryProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$customCategoryHash,
+          dependencies: CustomCategoryFamily._dependencies,
+          allTransitiveDependencies:
+              CustomCategoryFamily._allTransitiveDependencies,
+          categoryName: categoryName,
+          icon: icon,
+          description: description,
+        );
+
+  CustomCategoryProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.categoryName,
+    required this.icon,
+    required this.description,
+  }) : super.internal();
+
+  final String categoryName;
+  final String icon;
+  final String? description;
+
+  @override
+  Override overrideWith(
+    FutureOr<ExpenseCategory> Function(CustomCategoryRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CustomCategoryProvider._internal(
+        (ref) => create(ref as CustomCategoryRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        categoryName: categoryName,
+        icon: icon,
+        description: description,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ExpenseCategory> createElement() {
+    return _CustomCategoryProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CustomCategoryProvider &&
+        other.categoryName == categoryName &&
+        other.icon == icon &&
+        other.description == description;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, categoryName.hashCode);
+    hash = _SystemHash.combine(hash, icon.hashCode);
+    hash = _SystemHash.combine(hash, description.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin CustomCategoryRef on AutoDisposeFutureProviderRef<ExpenseCategory> {
+  /// The parameter `categoryName` of this provider.
+  String get categoryName;
+
+  /// The parameter `icon` of this provider.
+  String get icon;
+
+  /// The parameter `description` of this provider.
+  String? get description;
+}
+
+class _CustomCategoryProviderElement
+    extends AutoDisposeFutureProviderElement<ExpenseCategory>
+    with CustomCategoryRef {
+  _CustomCategoryProviderElement(super.provider);
+
+  @override
+  String get categoryName => (origin as CustomCategoryProvider).categoryName;
+  @override
+  String get icon => (origin as CustomCategoryProvider).icon;
+  @override
+  String? get description => (origin as CustomCategoryProvider).description;
+}
+
+String _$budgetSummaryHash() => r'7267d3e483f3c87b81d6fd510160498c0ab33f28';
+
+/// See also [budgetSummary].
+@ProviderFor(budgetSummary)
+const budgetSummaryProvider = BudgetSummaryFamily();
+
+/// See also [budgetSummary].
+class BudgetSummaryFamily extends Family<AsyncValue<BudgetSummaryModel>> {
+  /// See also [budgetSummary].
+  const BudgetSummaryFamily();
+
+  /// See also [budgetSummary].
+  BudgetSummaryProvider call(
+    int tripId,
+  ) {
+    return BudgetSummaryProvider(
+      tripId,
+    );
+  }
+
+  @override
+  BudgetSummaryProvider getProviderOverride(
+    covariant BudgetSummaryProvider provider,
+  ) {
+    return call(
+      provider.tripId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'budgetSummaryProvider';
+}
+
+/// See also [budgetSummary].
+class BudgetSummaryProvider
+    extends AutoDisposeFutureProvider<BudgetSummaryModel> {
+  /// See also [budgetSummary].
+  BudgetSummaryProvider(
+    int tripId,
+  ) : this._internal(
+          (ref) => budgetSummary(
+            ref as BudgetSummaryRef,
+            tripId,
+          ),
+          from: budgetSummaryProvider,
+          name: r'budgetSummaryProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$budgetSummaryHash,
+          dependencies: BudgetSummaryFamily._dependencies,
+          allTransitiveDependencies:
+              BudgetSummaryFamily._allTransitiveDependencies,
+          tripId: tripId,
+        );
+
+  BudgetSummaryProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tripId,
+  }) : super.internal();
+
+  final int tripId;
+
+  @override
+  Override overrideWith(
+    FutureOr<BudgetSummaryModel> Function(BudgetSummaryRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: BudgetSummaryProvider._internal(
+        (ref) => create(ref as BudgetSummaryRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tripId: tripId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<BudgetSummaryModel> createElement() {
+    return _BudgetSummaryProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is BudgetSummaryProvider && other.tripId == tripId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tripId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin BudgetSummaryRef on AutoDisposeFutureProviderRef<BudgetSummaryModel> {
+  /// The parameter `tripId` of this provider.
+  int get tripId;
+}
+
+class _BudgetSummaryProviderElement
+    extends AutoDisposeFutureProviderElement<BudgetSummaryModel>
+    with BudgetSummaryRef {
+  _BudgetSummaryProviderElement(super.provider);
+
+  @override
+  int get tripId => (origin as BudgetSummaryProvider).tripId;
+}
+
+String _$itineraryNotifierHash() => r'4052adb1eb9acc5492f18cbd62f446dea219aea4';
 
 /// See also [ItineraryNotifier].
 @ProviderFor(ItineraryNotifier)
@@ -57,5 +539,152 @@ final itineraryNotifierProvider =
 );
 
 typedef _$ItineraryNotifier = AutoDisposeNotifier<ItineraryData?>;
+String _$suddenExpenseNotifierHash() =>
+    r'6c4b91ebf03c99367613c93904d5f5ba887fe0e3';
+
+abstract class _$SuddenExpenseNotifier
+    extends BuildlessAutoDisposeAsyncNotifier<List<SuddenExpenseModel>> {
+  late final int tripId;
+
+  FutureOr<List<SuddenExpenseModel>> build(
+    int tripId,
+  );
+}
+
+/// See also [SuddenExpenseNotifier].
+@ProviderFor(SuddenExpenseNotifier)
+const suddenExpenseNotifierProvider = SuddenExpenseNotifierFamily();
+
+/// See also [SuddenExpenseNotifier].
+class SuddenExpenseNotifierFamily
+    extends Family<AsyncValue<List<SuddenExpenseModel>>> {
+  /// See also [SuddenExpenseNotifier].
+  const SuddenExpenseNotifierFamily();
+
+  /// See also [SuddenExpenseNotifier].
+  SuddenExpenseNotifierProvider call(
+    int tripId,
+  ) {
+    return SuddenExpenseNotifierProvider(
+      tripId,
+    );
+  }
+
+  @override
+  SuddenExpenseNotifierProvider getProviderOverride(
+    covariant SuddenExpenseNotifierProvider provider,
+  ) {
+    return call(
+      provider.tripId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'suddenExpenseNotifierProvider';
+}
+
+/// See also [SuddenExpenseNotifier].
+class SuddenExpenseNotifierProvider
+    extends AutoDisposeAsyncNotifierProviderImpl<SuddenExpenseNotifier,
+        List<SuddenExpenseModel>> {
+  /// See also [SuddenExpenseNotifier].
+  SuddenExpenseNotifierProvider(
+    int tripId,
+  ) : this._internal(
+          () => SuddenExpenseNotifier()..tripId = tripId,
+          from: suddenExpenseNotifierProvider,
+          name: r'suddenExpenseNotifierProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$suddenExpenseNotifierHash,
+          dependencies: SuddenExpenseNotifierFamily._dependencies,
+          allTransitiveDependencies:
+              SuddenExpenseNotifierFamily._allTransitiveDependencies,
+          tripId: tripId,
+        );
+
+  SuddenExpenseNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tripId,
+  }) : super.internal();
+
+  final int tripId;
+
+  @override
+  FutureOr<List<SuddenExpenseModel>> runNotifierBuild(
+    covariant SuddenExpenseNotifier notifier,
+  ) {
+    return notifier.build(
+      tripId,
+    );
+  }
+
+  @override
+  Override overrideWith(SuddenExpenseNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: SuddenExpenseNotifierProvider._internal(
+        () => create()..tripId = tripId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tripId: tripId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<SuddenExpenseNotifier,
+      List<SuddenExpenseModel>> createElement() {
+    return _SuddenExpenseNotifierProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SuddenExpenseNotifierProvider && other.tripId == tripId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tripId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin SuddenExpenseNotifierRef
+    on AutoDisposeAsyncNotifierProviderRef<List<SuddenExpenseModel>> {
+  /// The parameter `tripId` of this provider.
+  int get tripId;
+}
+
+class _SuddenExpenseNotifierProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<SuddenExpenseNotifier,
+        List<SuddenExpenseModel>> with SuddenExpenseNotifierRef {
+  _SuddenExpenseNotifierProviderElement(super.provider);
+
+  @override
+  int get tripId => (origin as SuddenExpenseNotifierProvider).tripId;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
