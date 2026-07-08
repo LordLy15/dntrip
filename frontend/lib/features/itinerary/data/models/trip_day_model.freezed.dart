@@ -21,7 +21,8 @@ TripDayModel _$TripDayModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TripDayModel {
   int get id => throw _privateConstructorUsedError;
-  int get dayNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'day_number')
+  int? get dayNumber => throw _privateConstructorUsedError;
   String? get date => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   List<ActivityModel> get activities => throw _privateConstructorUsedError;
@@ -40,7 +41,7 @@ abstract class $TripDayModelCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      int dayNumber,
+      @JsonKey(name: 'day_number') int? dayNumber,
       String? date,
       String? notes,
       List<ActivityModel> activities});
@@ -60,7 +61,7 @@ class _$TripDayModelCopyWithImpl<$Res, $Val extends TripDayModel>
   @override
   $Res call({
     Object? id = null,
-    Object? dayNumber = null,
+    Object? dayNumber = freezed,
     Object? date = freezed,
     Object? notes = freezed,
     Object? activities = null,
@@ -70,10 +71,10 @@ class _$TripDayModelCopyWithImpl<$Res, $Val extends TripDayModel>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      dayNumber: null == dayNumber
+      dayNumber: freezed == dayNumber
           ? _value.dayNumber
           : dayNumber // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -100,7 +101,7 @@ abstract class _$$TripDayModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
-      int dayNumber,
+      @JsonKey(name: 'day_number') int? dayNumber,
       String? date,
       String? notes,
       List<ActivityModel> activities});
@@ -118,7 +119,7 @@ class __$$TripDayModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? dayNumber = null,
+    Object? dayNumber = freezed,
     Object? date = freezed,
     Object? notes = freezed,
     Object? activities = null,
@@ -128,10 +129,10 @@ class __$$TripDayModelImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      dayNumber: null == dayNumber
+      dayNumber: freezed == dayNumber
           ? _value.dayNumber
           : dayNumber // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -153,7 +154,7 @@ class __$$TripDayModelImplCopyWithImpl<$Res>
 class _$TripDayModelImpl implements _TripDayModel {
   const _$TripDayModelImpl(
       {required this.id,
-      required this.dayNumber,
+      @JsonKey(name: 'day_number') this.dayNumber,
       this.date,
       this.notes,
       final List<ActivityModel> activities = const []})
@@ -165,7 +166,8 @@ class _$TripDayModelImpl implements _TripDayModel {
   @override
   final int id;
   @override
-  final int dayNumber;
+  @JsonKey(name: 'day_number')
+  final int? dayNumber;
   @override
   final String? date;
   @override
@@ -220,7 +222,7 @@ class _$TripDayModelImpl implements _TripDayModel {
 abstract class _TripDayModel implements TripDayModel {
   const factory _TripDayModel(
       {required final int id,
-      required final int dayNumber,
+      @JsonKey(name: 'day_number') final int? dayNumber,
       final String? date,
       final String? notes,
       final List<ActivityModel> activities}) = _$TripDayModelImpl;
@@ -231,7 +233,8 @@ abstract class _TripDayModel implements TripDayModel {
   @override
   int get id;
   @override
-  int get dayNumber;
+  @JsonKey(name: 'day_number')
+  int? get dayNumber;
   @override
   String? get date;
   @override

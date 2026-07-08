@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/activity_model.dart';
+import '../../data/models/trip_day_model.dart';
 import '../../domain/itinerary_providers.dart';
 import '../widgets/sudden_expense_sheet.dart';
 import 'activity_complete_sheet.dart';
@@ -66,7 +67,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     if (data == null) return;
 
     // Calculate next day number
-    final lastDay = data.days.isEmpty ? 0 : data.days.map((d) => d.dayNumber).reduce((a, b) => a > b ? a : b);
+    final lastDay = data.days.isEmpty ? 0 : data.days.map((d) => d.dayNumber ?? 0).reduce((a, b) => a > b ? a : b);
     final nextDayNumber = lastDay + 1;
 
     // Get suggested date (tomorrow if no days, otherwise day after last)
@@ -121,6 +122,12 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           ),
           ElevatedButton(
             onPressed: () {
+              if (dateController.text.isEmpty) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text('Pilih tanggal terlebih dahulu')),
+                );
+                return;
+              }
               Navigator.pop(ctx, {
                 'date': dateController.text,
               });
@@ -137,20 +144,79 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   }
 
   Future<void> _addDay(String date) async {
+    // Validate date format
+    if (date.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tanggal tidak boleh kosong')),
+      );
+      return;
+    }
+
+    // Validate date format YYYY-MM-DD
+    final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+    if (!dateRegex.hasMatch(date)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Format tanggal tidak valid. Gunakan YYYY-MM-DD')),
+      );
+      return;
+    }
+
     try {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              SizedBox(width: 16),
+              Text('Menambahkan hari...'),
+            ],
+          ),
+          duration: Duration(seconds: 10),
+        ),
+      );
+
       final repo = ref.read(itineraryRepositoryProvider);
       final newDay = await repo.createDay(tripId: widget.tripId, date: date);
+      debugPrint('Day created successfully: $newDay');
+
       // Refresh itinerary
       await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+
       if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hari berhasil ditambahkan!')),
+          const SnackBar(
+            content: Text('Hari berhasil ditambahkan!'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
+      debugPrint('Error adding day: $e');
       if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        String errorMessage = 'Gagal menambah hari';
+        if (e.toString().contains('401')) {
+          errorMessage = 'Sesi telah berakhir. Silakan login kembali.';
+        } else if (e.toString().contains('403')) {
+          errorMessage = 'Anda tidak memiliki akses untuk menambah hari.';
+        } else if (e.toString().contains('404')) {
+          errorMessage = 'Trip tidak ditemukan.';
+        } else if (e.toString().contains('422')) {
+          errorMessage = 'Data tidak valid. Periksa format tanggal.';
+        } else if (e.toString().contains('SocketException') || e.toString().contains('Connection')) {
+          errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menambah hari: $e')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -215,14 +281,12 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     }
 
     // Calculate statistics
-    int totalActivities = 0;
     double totalEstimated = 0;
     double totalActual = 0;
 
     for (final day in data.days) {
       for (final a in day.activities) {
         if (!a.isUnplanned) {
-          totalActivities++;
           totalEstimated += a.estimatedCost;
           if (a.isCompleted) {
             totalActual += a.actualCost ?? 0;
@@ -237,7 +301,17 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         : 0.0;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Itinerary')),
+      appBar: AppBar(
+        title: const Text('Itinerary'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.flash_on),
+            onPressed: _showSuddenExpenseSheet,
+            tooltip: 'Pengeluaran Mendadak',
+            color: Colors.orange,
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(
@@ -349,11 +423,47 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddDayDialog,
-        icon: const Icon(Icons.add_circle),
-        label: const Text('Tambah Hari'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showQuickActionMenu,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showQuickActionMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Colors.blue,
+                child: Icon(Icons.calendar_today, color: Colors.white),
+              ),
+              title: const Text('Tambah Hari'),
+              subtitle: const Text('Tambahkan hari perjalanan baru'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showAddDayDialog();
+              },
+            ),
+            ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Colors.orange,
+                child: Icon(Icons.flash_on, color: Colors.white),
+              ),
+              title: const Text('Pengeluaran Mendadak'),
+              subtitle: const Text('Catat pengeluaran di luar rencana'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showSuddenExpenseSheet();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
@@ -369,7 +479,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     );
   }
 
-  Widget _buildDayCard(day) {
+  Widget _buildDayCard(TripDayModel day) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ExpansionTile(
@@ -405,10 +515,10 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                   ),
                 ),
                 title: Text(a.title ?? 'Tanpa judul'),
-                subtitle: Text('Rp ${_formatCurrency(a.estimatedCost)}'),
+                subtitle: Text('Rp ${_formatCurrency(a.estimatedCost.toDouble())}'),
                 trailing: a.isCompleted
                     ? Text(
-                        'Rp ${_formatCurrency(a.actualCost ?? 0)}',
+                        'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}',
                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       )
                     : null,

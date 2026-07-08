@@ -8,7 +8,7 @@ part of 'itinerary_data.dart';
 
 _$ItineraryDataImpl _$$ItineraryDataImplFromJson(Map<String, dynamic> json) =>
     _$ItineraryDataImpl(
-      tripId: (json['tripId'] as num?)?.toInt(),
+      tripId: (json['trip_id'] as num?)?.toInt(),
       days: (json['days'] as List<dynamic>?)
               ?.map((e) => TripDayModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -17,6 +17,6 @@ _$ItineraryDataImpl _$$ItineraryDataImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$ItineraryDataImplToJson(_$ItineraryDataImpl instance) =>
     <String, dynamic>{
-      'tripId': instance.tripId,
+      'trip_id': instance.tripId,
       'days': instance.days,
     };

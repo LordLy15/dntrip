@@ -1,4 +1,5 @@
 import 'package:dntrip/core/api/api_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:dntrip/features/itinerary/data/models/itinerary_data.dart';
 import 'package:dntrip/features/itinerary/data/models/activity_model.dart';
 import 'package:dntrip/features/itinerary/data/models/trip_day_model.dart';
@@ -21,19 +22,63 @@ class ItineraryRemoteDatasource {
   }
 
   Future<TripDayModel> createDay({required int tripId, required String date}) async {
-    final response = await _apiClient.post(
-      '/trips/$tripId/days',
-      data: {'date': date},
-    );
+    try {
+      final response = await _apiClient.post(
+        '/trips/$tripId/days',
+        data: {'date': date},
+      );
 
-    final data = response['data'] as Map<String, dynamic>?;
-    final dayData = data?['day'] as Map<String, dynamic>?;
+      debugPrint('createDay response: $response');
+      debugPrint('createDay response keys: ${response.keys.toList()}');
 
-    if (dayData == null) {
-      throw Exception('Failed to create day');
+      // Check for errors in response
+      if (response.containsKey('errors')) {
+        final errors = response['errors'];
+        debugPrint('Server errors: $errors');
+        throw Exception('Validation error: $errors');
+      }
+
+      // Check status
+      if (response['status'] == 'error') {
+        throw Exception(response['message'] ?? 'Unknown error from server');
+      }
+
+      final responseData = response['data'];
+      debugPrint('createDay data: $responseData');
+
+      if (responseData == null) {
+        throw Exception('Server returned null data');
+      }
+
+      // Handle nested day object
+      Map<String, dynamic> dayData;
+      if (responseData is Map<String, dynamic>) {
+        if (responseData.containsKey('day')) {
+          dayData = responseData['day'] as Map<String, dynamic>;
+        } else {
+          // Response is directly the day object
+          dayData = responseData;
+        }
+      } else {
+        throw Exception('Invalid response format from server: ${responseData.runtimeType}');
+      }
+
+      debugPrint('Parsed dayData: $dayData');
+      debugPrint('day_number value: ${dayData['day_number']} (type: ${dayData['day_number']?.runtimeType})');
+
+      // Validate required fields
+      if (dayData['day_number'] == null) {
+        throw Exception('day_number is null in server response');
+      }
+      if (dayData['id'] == null) {
+        throw Exception('id is null in server response');
+      }
+
+      return TripDayModel.fromJson(dayData);
+    } catch (e) {
+      debugPrint('createDay error: $e');
+      rethrow;
     }
-
-    return TripDayModel.fromJson(dayData);
   }
 
   Future<ActivityModel> createActivity({

@@ -8,7 +8,7 @@ part 'trip_day_model.g.dart';
 class TripDayModel with _$TripDayModel {
   const factory TripDayModel({
     required int id,
-    required int dayNumber,
+    @JsonKey(name: 'day_number') int? dayNumber,
     String? date,
     String? notes,
     @Default([]) List<ActivityModel> activities,

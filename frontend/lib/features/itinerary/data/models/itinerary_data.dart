@@ -7,7 +7,7 @@ part 'itinerary_data.g.dart';
 @freezed
 class ItineraryData with _$ItineraryData {
   const factory ItineraryData({
-    int? tripId,
+    @JsonKey(name: 'trip_id') int? tripId,
     @Default([]) List<TripDayModel> days,
   }) = _ItineraryData;
 

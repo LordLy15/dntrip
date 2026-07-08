@@ -20,6 +20,7 @@ ItineraryData _$ItineraryDataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ItineraryData {
+  @JsonKey(name: 'trip_id')
   int? get tripId => throw _privateConstructorUsedError;
   List<TripDayModel> get days => throw _privateConstructorUsedError;
 
@@ -35,7 +36,7 @@ abstract class $ItineraryDataCopyWith<$Res> {
           ItineraryData value, $Res Function(ItineraryData) then) =
       _$ItineraryDataCopyWithImpl<$Res, ItineraryData>;
   @useResult
-  $Res call({int? tripId, List<TripDayModel> days});
+  $Res call({@JsonKey(name: 'trip_id') int? tripId, List<TripDayModel> days});
 }
 
 /// @nodoc
@@ -75,7 +76,7 @@ abstract class _$$ItineraryDataImplCopyWith<$Res>
       __$$ItineraryDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? tripId, List<TripDayModel> days});
+  $Res call({@JsonKey(name: 'trip_id') int? tripId, List<TripDayModel> days});
 }
 
 /// @nodoc
@@ -109,13 +110,15 @@ class __$$ItineraryDataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ItineraryDataImpl implements _ItineraryData {
   const _$ItineraryDataImpl(
-      {this.tripId, final List<TripDayModel> days = const []})
+      {@JsonKey(name: 'trip_id') this.tripId,
+      final List<TripDayModel> days = const []})
       : _days = days;
 
   factory _$ItineraryDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ItineraryDataImplFromJson(json);
 
   @override
+  @JsonKey(name: 'trip_id')
   final int? tripId;
   final List<TripDayModel> _days;
   @override
@@ -161,12 +164,14 @@ class _$ItineraryDataImpl implements _ItineraryData {
 
 abstract class _ItineraryData implements ItineraryData {
   const factory _ItineraryData(
-      {final int? tripId, final List<TripDayModel> days}) = _$ItineraryDataImpl;
+      {@JsonKey(name: 'trip_id') final int? tripId,
+      final List<TripDayModel> days}) = _$ItineraryDataImpl;
 
   factory _ItineraryData.fromJson(Map<String, dynamic> json) =
       _$ItineraryDataImpl.fromJson;
 
   @override
+  @JsonKey(name: 'trip_id')
   int? get tripId;
   @override
   List<TripDayModel> get days;

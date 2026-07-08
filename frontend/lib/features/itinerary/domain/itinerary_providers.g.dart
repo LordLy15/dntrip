@@ -523,7 +523,7 @@ class _BudgetSummaryProviderElement
   int get tripId => (origin as BudgetSummaryProvider).tripId;
 }
 
-String _$itineraryNotifierHash() => r'6dfe640b5dbe4f749e947cd3d09c0243ee72668b';
+String _$itineraryNotifierHash() => r'4052adb1eb9acc5492f18cbd62f446dea219aea4';
 
 /// See also [ItineraryNotifier].
 @ProviderFor(ItineraryNotifier)
