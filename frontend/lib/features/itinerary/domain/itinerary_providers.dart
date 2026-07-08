@@ -32,40 +32,33 @@ ItineraryRepository itineraryRepository(ItineraryRepositoryRef ref) {
 
 @riverpod
 class ItineraryNotifier extends _$ItineraryNotifier {
-  int? _lastTripId;
+  bool _isLoading = false;
 
   @override
   ItineraryData? build() => null;
 
+  /// Load itinerary data from API
   Future<void> loadItinerary(int tripId) async {
-    // Prevent multiple simultaneous loads for same trip
-    if (_lastTripId == tripId && state != null) {
-      // Data already loaded, just refresh in background
-      _refreshInBackground(tripId);
-      return;
+    // Prevent duplicate calls
+    if (_isLoading) return;
+    if (_isLoading == false) {
+      _isLoading = true;
     }
 
-    _lastTripId = tripId;
     try {
       final data = await ref.read(itineraryRepositoryProvider).getItinerary(tripId);
-      if (_lastTripId == tripId) {
-        state = data;
-      }
+      state = data;
     } catch (e) {
-      // Keep previous state if available
+      // On error, keep previous state or set empty
+      if (state == null) {
+        state = ItineraryData(tripId: tripId, days: []);
+      }
+    } finally {
+      _isLoading = false;
     }
   }
 
-  Future<void> _refreshInBackground(int tripId) async {
-    if (_lastTripId != tripId) return;
-    try {
-      final data = await ref.read(itineraryRepositoryProvider).getItinerary(tripId);
-      if (_lastTripId == tripId) {
-        state = data;
-      }
-    } catch (_) {}
-  }
-
+  /// Add new activity with optimistic update
   Future<void> createActivity({
     required int tripDayId,
     required String title,
@@ -78,7 +71,7 @@ class ItineraryNotifier extends _$ItineraryNotifier {
     final tripId = currentData.tripId;
     if (tripId == null) return;
 
-    // Optimistic update
+    // Create optimistic activity
     final tempId = -DateTime.now().millisecondsSinceEpoch;
     final tempActivity = ActivityModel(
       id: tempId,
@@ -89,6 +82,7 @@ class ItineraryNotifier extends _$ItineraryNotifier {
       isUnplanned: false,
     );
 
+    // Update UI immediately
     final updatedDays = currentData.days.map((day) {
       if (day.id == tripDayId) {
         return TripDayModel(
@@ -104,6 +98,7 @@ class ItineraryNotifier extends _$ItineraryNotifier {
 
     state = ItineraryData(tripId: currentData.tripId, days: updatedDays);
 
+    // Send to server
     try {
       final activity = await ref.read(itineraryRepositoryProvider).createActivity(
         tripId: tripId,
@@ -132,10 +127,12 @@ class ItineraryNotifier extends _$ItineraryNotifier {
         state = ItineraryData(tripId: state!.tripId, days: finalDays);
       }
     } catch (_) {
+      // Revert on error
       state = currentData;
     }
   }
 
+  /// Complete an activity
   Future<void> completeActivity({
     required int activityId,
     required int actualCost,
@@ -154,6 +151,7 @@ class ItineraryNotifier extends _$ItineraryNotifier {
     }
     if (targetDayId == null) return;
 
+    // Optimistic update
     final updatedDays = currentData.days.map((day) {
       if (day.id == targetDayId) {
         return TripDayModel(
@@ -198,6 +196,7 @@ class ItineraryNotifier extends _$ItineraryNotifier {
     }
   }
 
+  /// Delete activity
   Future<void> deleteActivity(int activityId) async {
     final currentData = state;
     if (currentData == null) return;

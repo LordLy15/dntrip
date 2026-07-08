@@ -168,6 +168,46 @@ class ItineraryController extends Controller
         ]);
     }
 
+    /**
+     * Create a new day for the trip
+     */
+    public function createDay(Request $request, int $tripId): JsonResponse
+    {
+        $trip = Trip::with('days')->findOrFail($tripId);
+        $this->checkAccess($request->user(), $trip);
+        $this->checkEditAccess($request->user(), $trip);
+
+        $request->validate([
+            'date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Calculate next day number
+        $lastDay = $trip->days->sortByDesc('day_number')->first();
+        $nextDayNumber = ($lastDay ? $lastDay->day_number + 1 : 1);
+
+        $day = TripDay::create([
+            'trip_id' => $tripId,
+            'day_number' => $nextDayNumber,
+            'date' => $request->date,
+            'notes' => $request->notes,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'day' => [
+                    'id' => $day->id,
+                    'day_number' => $day->day_number,
+                    'date' => $day->date->format('Y-m-d'),
+                    'notes' => $day->notes,
+                    'activities' => [],
+                ],
+            ],
+            'message' => 'Day added successfully',
+        ], 201);
+    }
+
     // Helpers
     private function checkAccess($user, $trip): void
     {

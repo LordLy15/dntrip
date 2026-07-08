@@ -1,6 +1,7 @@
 import 'package:dntrip/core/api/api_client.dart';
 import 'package:dntrip/features/itinerary/data/models/itinerary_data.dart';
 import 'package:dntrip/features/itinerary/data/models/activity_model.dart';
+import 'package:dntrip/features/itinerary/data/models/trip_day_model.dart';
 import 'package:dntrip/features/itinerary/data/models/budget_summary_model.dart';
 
 class ItineraryRemoteDatasource {
@@ -17,6 +18,22 @@ class ItineraryRemoteDatasource {
     }
 
     return ItineraryData.fromJson(data);
+  }
+
+  Future<TripDayModel> createDay({required int tripId, required String date}) async {
+    final response = await _apiClient.post(
+      '/trips/$tripId/days',
+      data: {'date': date},
+    );
+
+    final data = response['data'] as Map<String, dynamic>?;
+    final dayData = data?['day'] as Map<String, dynamic>?;
+
+    if (dayData == null) {
+      throw Exception('Failed to create day');
+    }
+
+    return TripDayModel.fromJson(dayData);
   }
 
   Future<ActivityModel> createActivity({

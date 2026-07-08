@@ -2,6 +2,7 @@ import 'package:dntrip/features/itinerary/data/datasources/itinerary_remote_data
 import 'package:dntrip/features/itinerary/data/datasources/sudden_expense_remote_datasource.dart';
 import 'package:dntrip/features/itinerary/data/models/itinerary_data.dart';
 import 'package:dntrip/features/itinerary/data/models/activity_model.dart';
+import 'package:dntrip/features/itinerary/data/models/trip_day_model.dart';
 import 'package:dntrip/features/itinerary/data/models/budget_summary_model.dart';
 import 'package:dntrip/features/itinerary/data/models/sudden_expense_model.dart';
 import 'package:dntrip/features/itinerary/data/models/expense_category_model.dart';
@@ -14,6 +15,9 @@ class ItineraryRepository {
   ItineraryRepository(this._remote, this._suddenExpenseDatasource);
 
   Future<ItineraryData> getItinerary(int tripId) => _remote.getItinerary(tripId);
+
+  Future<TripDayModel> createDay({required int tripId, required String date}) =>
+      _remote.createDay(tripId: tripId, date: date);
 
   Future<ActivityModel> createActivity({
     required int tripId,

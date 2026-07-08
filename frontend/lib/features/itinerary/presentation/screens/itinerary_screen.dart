@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/activity_model.dart';
-import '../../data/models/budget_summary_model.dart';
 import '../../domain/itinerary_providers.dart';
-import '../widgets/budget_summary_card.dart';
-import '../widgets/day_card.dart';
 import '../widgets/sudden_expense_sheet.dart';
 import 'activity_complete_sheet.dart';
 
@@ -19,22 +16,13 @@ class ItineraryScreen extends ConsumerStatefulWidget {
 }
 
 class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
-  bool _initialLoadDone = false;
-
   @override
   void initState() {
     super.initState();
-    // Load only once when screen first opens
+    // Load data when screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadData();
-    });
-  }
-
-  void _loadData() {
-    if (!_initialLoadDone) {
-      _initialLoadDone = true;
       ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
-    }
+    });
   }
 
   Future<void> _refresh() async {
@@ -56,12 +44,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       if (activity != null) break;
     }
 
-    if (activity == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Activity tidak ditemukan')),
-      );
-      return;
-    }
+    if (activity == null) return;
 
     showModalBottomSheet(
       context: context,
@@ -78,29 +61,99 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     );
   }
 
-  void _showSuddenExpenseSheet() {
+  Future<void> _showAddDayDialog() async {
     final data = ref.read(itineraryNotifierProvider);
     if (data == null) return;
 
-    // Hitung budget dari data yang sudah ada
-    double totalActual = 0;
-    for (final day in data.days) {
-      for (final a in day.activities) {
-        if (a.isCompleted) {
-          totalActual += a.actualCost ?? 0;
+    // Calculate next day number
+    final lastDay = data.days.isEmpty ? 0 : data.days.map((d) => d.dayNumber).reduce((a, b) => a > b ? a : b);
+    final nextDayNumber = lastDay + 1;
+
+    // Get suggested date (tomorrow if no days, otherwise day after last)
+    DateTime suggestedDate = DateTime.now().add(const Duration(days: 1));
+    if (data.days.isNotEmpty) {
+      try {
+        final lastDateStr = data.days.last.date;
+        if (lastDateStr != null) {
+          final lastDate = DateTime.parse(lastDateStr);
+          suggestedDate = lastDate.add(const Duration(days: 1));
         }
-      }
+      } catch (_) {}
     }
 
-    showModalBottomSheet(
+    final dateController = TextEditingController(
+      text: suggestedDate.toIso8601String().split('T')[0],
+    );
+
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      isScrollControlled: true,
-      builder: (ctx) => SuddenExpenseSheet(
-        tripId: widget.tripId,
-        planBudget: 0,
-        currentTotal: totalActual,
+      builder: (ctx) => AlertDialog(
+        title: Text('Tambah Hari $nextDayNumber'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: dateController,
+              decoration: const InputDecoration(
+                labelText: 'Tanggal',
+                hintText: 'YYYY-MM-DD',
+                prefixIcon: Icon(Icons.calendar_today),
+              ),
+              readOnly: true,
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: ctx,
+                  initialDate: suggestedDate,
+                  firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                );
+                if (picked != null) {
+                  dateController.text = picked.toIso8601String().split('T')[0];
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx, {
+                'date': dateController.text,
+              });
+            },
+            child: const Text('Tambah'),
+          ),
+        ],
       ),
     );
+
+    if (result != null && result['date'] != null) {
+      await _addDay(result['date'] as String);
+    }
+  }
+
+  Future<void> _addDay(String date) async {
+    try {
+      final repo = ref.read(itineraryRepositoryProvider);
+      final newDay = await repo.createDay(tripId: widget.tripId, date: date);
+      // Refresh itinerary
+      await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Hari berhasil ditambahkan!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menambah hari: $e')),
+        );
+      }
+    }
   }
 
   void _navigateToAddActivity(int tripDayId) {
@@ -111,8 +164,8 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   Widget build(BuildContext context) {
     final data = ref.watch(itineraryNotifierProvider);
 
-    // Show loading only on first app open with no cache
-    if (data == null && !_initialLoadDone) {
+    // Show loading spinner while data is null
+    if (data == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Itinerary')),
         body: const Center(
@@ -128,18 +181,8 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       );
     }
 
-    // If no data yet, start loading in background and show empty
-    if (data == null) {
-      // Trigger loading if not started
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _loadData();
-      });
-      return _buildEmptyState();
-    }
-
-    // Hitung statistik dari data lokal
+    // Calculate statistics
     int totalActivities = 0;
-    int onTimeActivities = 0;
     double totalEstimated = 0;
     double totalActual = 0;
 
@@ -150,9 +193,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           totalEstimated += a.estimatedCost;
           if (a.isCompleted) {
             totalActual += a.actualCost ?? 0;
-            if (a.startedOnTime) {
-              onTimeActivities++;
-            }
           }
         }
       }
@@ -177,7 +217,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -243,30 +283,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                       ),
                     ],
                   ),
-                  if (totalActivities > 0) ...[
-                    const SizedBox(height: 16),
-                    const Divider(color: Colors.white30),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.timer, color: Colors.white70, size: 16),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$onTimeActivities/$totalActivities Aktivitas On Time',
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        const Spacer(),
-                        SizedBox(
-                          width: 50,
-                          child: LinearProgressIndicator(
-                            value: totalActivities > 0 ? onTimeActivities / totalActivities : 0,
-                            backgroundColor: Colors.white30,
-                            valueColor: const AlwaysStoppedAnimation(Colors.green),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -295,45 +311,16 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 ),
               )
             else
-              ...data.days.map(
-                (day) => _buildDayCard(day),
-              ),
+              ...data.days.map((day) => _buildDayCard(day)),
             const SizedBox(height: 80),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showSuddenExpenseSheet,
-        icon: const Icon(Icons.flash_on),
-        label: const Text('Pengeluaran Mendadak'),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Itinerary')),
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        child: ListView(
-          children: [
-            const SizedBox(height: 100),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Memuat itinerary...',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        onPressed: _showAddDayDialog,
+        icon: const Icon(Icons.add_circle),
+        label: const Text('Tambah Hari'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -389,10 +376,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 trailing: a.isCompleted
                     ? Text(
                         'Rp ${_formatCurrency(a.actualCost ?? 0)}',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       )
                     : null,
                 onTap: a.isCompleted ? null : () => _showCompleteSheet(a.id),

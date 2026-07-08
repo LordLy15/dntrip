@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Itinerary / Activities
     Route::get('/trips/{id}/days', [ItineraryController::class, 'index']);
+    Route::post('/trips/{tripId}/days', [ItineraryController::class, 'createDay']);
     Route::post('/trips/{tripId}/activities', [ItineraryController::class, 'createActivity']);
     Route::put('/trips/{tripId}/activities/{activityId}', [ItineraryController::class, 'updateActivity']);
     Route::put('/trips/{tripId}/activities/{activityId}/complete', [ItineraryController::class, 'completeActivity']);
