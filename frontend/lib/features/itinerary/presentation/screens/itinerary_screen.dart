@@ -429,6 +429,12 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         title: const Text('Itinerary'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.pie_chart),
+            onPressed: () => context.push('/trips/${widget.tripId}/dashboard?budget=${widget.planBudget ?? 0}'),
+            tooltip: 'Dashboard',
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          IconButton(
             icon: const Icon(Icons.flash_on),
             onPressed: _showSuddenExpenseSheet,
             tooltip: 'Pengeluaran Mendadak',
