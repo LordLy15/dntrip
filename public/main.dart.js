@@ -51704,13 +51704,16 @@ break
 case 1:return A.G(q,r)}})
 return A.H($async$Ak,r)},
 Dt(a,b,c,d,e){return this.ax7(a,b,c,d,e)},
-ax7(a,b,c,d,e){var s=0,r=A.I(t.s9),q,p=this,o,n
+ax7(a,b,c,d,e){var s=0,r=A.I(t.s9),q,p=this,o,n,m
 var $async$Dt=A.J(function(f,g){if(f===1)return A.F(g,r)
-for(;;)switch(s){case 0:o=A
-n=J
+for(;;)switch(s){case 0:o=A.az(["name",d,"amount",a],t.N,t.z)
+if(b!=null&&b>7)o.m(0,"category_id",b)
+if(c!=null&&c.length!==0)o.m(0,"description",c)
+n=A
+m=J
 s=3
-return A.E(p.a.jz("/trips/"+e+"/sudden-expenses",A.az(["name",d,"category_id",b,"amount",a,"description",c],t.N,t.z)),$async$Dt)
-case 3:q=o.aWO(n.aJ(g,"data"))
+return A.E(p.a.jz("/trips/"+e+"/sudden-expenses",o),$async$Dt)
+case 3:q=n.aWO(m.aJ(g,"data"))
 s=1
 break
 case 1:return A.G(q,r)}})

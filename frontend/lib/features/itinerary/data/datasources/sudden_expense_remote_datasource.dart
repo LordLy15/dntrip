@@ -20,12 +20,21 @@ class SuddenExpenseRemoteDatasource {
     required double amount,
     String? description,
   }) async {
-    final response = await _apiClient.post('/trips/$tripId/sudden-expenses', data: {
+    final data = <String, dynamic>{
       'name': name,
-      'category_id': categoryId,
       'amount': amount,
-      'description': description,
-    });
+    };
+
+    // Only send category_id if it's a custom category (ID > 7 or explicitly custom)
+    if (categoryId != null && categoryId > 7) {
+      data['category_id'] = categoryId;
+    }
+
+    if (description != null && description.isNotEmpty) {
+      data['description'] = description;
+    }
+
+    final response = await _apiClient.post('/trips/$tripId/sudden-expenses', data: data);
     return SuddenExpenseModel.fromJson(response['data']);
   }
 
