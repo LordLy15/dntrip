@@ -9258,9 +9258,13 @@ oD:function oD(a,b){this.a=a
 this.b=b},
 awf:function awf(){},
 a1r:function a1r(){},
-aWO(a){var s=J.aB(a),r=B.d.c4(A.dF(s.i(a,"id"))),q=B.d.c4(A.dF(s.i(a,"tripId"))),p=A.bD(s.i(a,"name")),o=A.ir(s.i(a,"categoryId"))
-o=o==null?null:B.d.c4(o)
-return new A.Jo(r,q,p,o,A.aS(s.i(a,"categoryName")),A.aS(s.i(a,"categoryIcon")),A.dF(s.i(a,"amount")),A.aS(s.i(a,"description")),A.aNt(A.bD(s.i(a,"createdAt"))))},
+aWO(a){var s,r,q,p,o="created_at",n=J.aB(a),m=B.d.c4(A.dF(n.i(a,"id"))),l=B.d.c4(A.dF(n.i(a,"trip_id"))),k=A.bD(n.i(a,"name")),j=A.ir(n.i(a,"expense_category_id"))
+j=j==null?null:B.d.c4(j)
+s=A.aS(n.i(a,"categoryName"))
+r=A.aS(n.i(a,"categoryIcon"))
+q=A.dF(n.i(a,"amount"))
+p=A.aS(n.i(a,"description"))
+return new A.Jo(m,l,k,j,s,r,q,p,n.i(a,o)==null?null:A.aNt(A.bD(n.i(a,o))))},
 d8:function d8(){},
 awn:function awn(){},
 Jo:function Jo(a,b,c,d,e,f,g,h,i){var _=this
@@ -51881,7 +51885,7 @@ A.awn.prototype={
 d4(){return A.M($.b1A())}}
 A.Jo.prototype={
 j(a){var s=this
-return"SuddenExpenseModel(id: "+s.a+", tripId: "+s.b+", name: "+s.c+", categoryId: "+A.k(s.d)+", categoryName: "+A.k(s.e)+", categoryIcon: "+A.k(s.f)+", amount: "+A.k(s.r)+", description: "+A.k(s.w)+", createdAt: "+s.x.j(0)+")"},
+return"SuddenExpenseModel(id: "+s.a+", tripId: "+s.b+", name: "+s.c+", categoryId: "+A.k(s.d)+", categoryName: "+A.k(s.e)+", categoryIcon: "+A.k(s.f)+", amount: "+A.k(s.r)+", description: "+A.k(s.w)+", createdAt: "+A.k(s.x)+")"},
 k(a,b){var s,r,q=this
 if(b==null)return!1
 if(q!==b){s=!1
@@ -51895,12 +51899,13 @@ if(r||r){r=b.r===q.r
 if(r||r){r=b.w==q.w
 if(r||r){s=b.x
 r=q.x
-s=s===r||s.k(0,r)}}}}}}}}}}else s=!0
+s=s==r||J.d(s,r)}}}}}}}}}}else s=!0
 return s},
 gA(a){var s=this
 return A.T(A.p(s),s.a,s.b,s.c,s.d,s.e,s.f,s.r,s.w,s.x,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
-d4(){var s=this
-return A.az(["id",s.a,"tripId",s.b,"name",s.c,"categoryId",s.d,"categoryName",s.e,"categoryIcon",s.f,"amount",s.r,"description",s.w,"createdAt",s.x.Qz()],t.N,t.z)},
+d4(){var s=this,r=s.x
+r=r==null?null:r.Qz()
+return A.az(["id",s.a,"trip_id",s.b,"name",s.c,"expense_category_id",s.d,"categoryName",s.e,"categoryIcon",s.f,"amount",s.r,"description",s.w,"created_at",r],t.N,t.z)},
 $id8:1}
 A.a5t.prototype={}
 A.h7.prototype={}

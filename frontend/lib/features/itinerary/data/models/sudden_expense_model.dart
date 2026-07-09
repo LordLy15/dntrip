@@ -7,14 +7,14 @@ part 'sudden_expense_model.g.dart';
 class SuddenExpenseModel with _$SuddenExpenseModel {
   const factory SuddenExpenseModel({
     required int id,
-    required int tripId,
+    @JsonKey(name: 'trip_id') required int tripId,
     required String name,
-    int? categoryId,
+    @JsonKey(name: 'expense_category_id') int? categoryId,
     String? categoryName,
     String? categoryIcon,
     required double amount,
     String? description,
-    required DateTime createdAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _SuddenExpenseModel;
 
   factory SuddenExpenseModel.fromJson(Map<String, dynamic> json) =>

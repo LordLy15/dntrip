@@ -21,14 +21,17 @@ SuddenExpenseModel _$SuddenExpenseModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SuddenExpenseModel {
   int get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'trip_id')
   int get tripId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'expense_category_id')
   int? get categoryId => throw _privateConstructorUsedError;
   String? get categoryName => throw _privateConstructorUsedError;
   String? get categoryIcon => throw _privateConstructorUsedError;
   double get amount => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,14 +47,14 @@ abstract class $SuddenExpenseModelCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      int tripId,
+      @JsonKey(name: 'trip_id') int tripId,
       String name,
-      int? categoryId,
+      @JsonKey(name: 'expense_category_id') int? categoryId,
       String? categoryName,
       String? categoryIcon,
       double amount,
       String? description,
-      DateTime createdAt});
+      @JsonKey(name: 'created_at') DateTime? createdAt});
 }
 
 /// @nodoc
@@ -75,7 +78,7 @@ class _$SuddenExpenseModelCopyWithImpl<$Res, $Val extends SuddenExpenseModel>
     Object? categoryIcon = freezed,
     Object? amount = null,
     Object? description = freezed,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -110,10 +113,10 @@ class _$SuddenExpenseModelCopyWithImpl<$Res, $Val extends SuddenExpenseModel>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -128,14 +131,14 @@ abstract class _$$SuddenExpenseModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
-      int tripId,
+      @JsonKey(name: 'trip_id') int tripId,
       String name,
-      int? categoryId,
+      @JsonKey(name: 'expense_category_id') int? categoryId,
       String? categoryName,
       String? categoryIcon,
       double amount,
       String? description,
-      DateTime createdAt});
+      @JsonKey(name: 'created_at') DateTime? createdAt});
 }
 
 /// @nodoc
@@ -157,7 +160,7 @@ class __$$SuddenExpenseModelImplCopyWithImpl<$Res>
     Object? categoryIcon = freezed,
     Object? amount = null,
     Object? description = freezed,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_$SuddenExpenseModelImpl(
       id: null == id
@@ -192,10 +195,10 @@ class __$$SuddenExpenseModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ));
   }
 }
@@ -205,14 +208,14 @@ class __$$SuddenExpenseModelImplCopyWithImpl<$Res>
 class _$SuddenExpenseModelImpl implements _SuddenExpenseModel {
   const _$SuddenExpenseModelImpl(
       {required this.id,
-      required this.tripId,
+      @JsonKey(name: 'trip_id') required this.tripId,
       required this.name,
-      this.categoryId,
+      @JsonKey(name: 'expense_category_id') this.categoryId,
       this.categoryName,
       this.categoryIcon,
       required this.amount,
       this.description,
-      required this.createdAt});
+      @JsonKey(name: 'created_at') this.createdAt});
 
   factory _$SuddenExpenseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SuddenExpenseModelImplFromJson(json);
@@ -220,10 +223,12 @@ class _$SuddenExpenseModelImpl implements _SuddenExpenseModel {
   @override
   final int id;
   @override
+  @JsonKey(name: 'trip_id')
   final int tripId;
   @override
   final String name;
   @override
+  @JsonKey(name: 'expense_category_id')
   final int? categoryId;
   @override
   final String? categoryName;
@@ -234,7 +239,8 @@ class _$SuddenExpenseModelImpl implements _SuddenExpenseModel {
   @override
   final String? description;
   @override
-  final DateTime createdAt;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
 
   @override
   String toString() {
@@ -284,15 +290,16 @@ class _$SuddenExpenseModelImpl implements _SuddenExpenseModel {
 
 abstract class _SuddenExpenseModel implements SuddenExpenseModel {
   const factory _SuddenExpenseModel(
-      {required final int id,
-      required final int tripId,
-      required final String name,
-      final int? categoryId,
-      final String? categoryName,
-      final String? categoryIcon,
-      required final double amount,
-      final String? description,
-      required final DateTime createdAt}) = _$SuddenExpenseModelImpl;
+          {required final int id,
+          @JsonKey(name: 'trip_id') required final int tripId,
+          required final String name,
+          @JsonKey(name: 'expense_category_id') final int? categoryId,
+          final String? categoryName,
+          final String? categoryIcon,
+          required final double amount,
+          final String? description,
+          @JsonKey(name: 'created_at') final DateTime? createdAt}) =
+      _$SuddenExpenseModelImpl;
 
   factory _SuddenExpenseModel.fromJson(Map<String, dynamic> json) =
       _$SuddenExpenseModelImpl.fromJson;
@@ -300,10 +307,12 @@ abstract class _SuddenExpenseModel implements SuddenExpenseModel {
   @override
   int get id;
   @override
+  @JsonKey(name: 'trip_id')
   int get tripId;
   @override
   String get name;
   @override
+  @JsonKey(name: 'expense_category_id')
   int? get categoryId;
   @override
   String? get categoryName;
@@ -314,7 +323,8 @@ abstract class _SuddenExpenseModel implements SuddenExpenseModel {
   @override
   String? get description;
   @override
-  DateTime get createdAt;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$SuddenExpenseModelImplCopyWith<_$SuddenExpenseModelImpl> get copyWith =>
