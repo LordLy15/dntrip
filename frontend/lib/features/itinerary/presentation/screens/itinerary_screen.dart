@@ -57,6 +57,11 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
             activityId: activityId,
             actualCost: cost,
           );
+          // Show enhanced progress snackbar after completion
+          _showProgressSnackbar(
+            activityTitle: activity!.title ?? 'Kegiatan',
+            isCompleted: true,
+          );
         },
       ),
     );
@@ -84,11 +89,142 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     if (confirmed == true) {
       await ref.read(itineraryNotifierProvider.notifier).skipActivity(activityId);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kegiatan dibatalkan')),
+        _showProgressSnackbar(
+          activityTitle: null,
+          isCompleted: false,
+          isSkipped: true,
         );
       }
     }
+  }
+
+  void _showProgressSnackbar({
+    String? activityTitle,
+    required bool isCompleted,
+    bool isSkipped = false,
+  }) {
+    final data = ref.read(itineraryNotifierProvider);
+    if (data == null) return;
+
+    // Calculate current stats
+    double totalActual = 0;
+    int completedCount = 0;
+    int totalCount = 0;
+
+    for (final day in data.days) {
+      for (final a in day.activities) {
+        totalCount++;
+        if (a.isCompleted) {
+          completedCount++;
+          totalActual += (a.actualCost ?? 0).toDouble();
+        }
+      }
+    }
+
+    final planBudget = (widget.planBudget ?? 0).toDouble();
+    final remainingFromPlan = planBudget - totalActual;
+    final percentage = totalCount > 0
+        ? (completedCount / totalCount * 100).toStringAsFixed(0)
+        : '0';
+
+    final bgColor = isSkipped ? Colors.orange.shade600 : Colors.green.shade600;
+    final icon = isSkipped ? Icons.cancel : Icons.check_circle;
+
+    String title;
+    if (isSkipped) {
+      title = 'Kegiatan dibatalkan';
+    } else {
+      title = activityTitle != null
+          ? '"$activityTitle" selesai'
+          : 'Kegiatan selesai';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$completedCount/$totalCount ($percentage%)',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                if (planBudget > 0) ...[
+                  Text(
+                    'Plan: Rp ${_formatCurrencyFull(planBudget)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ],
+            ),
+            if (planBudget > 0) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Text(
+                    'Realita: ',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  Text(
+                    'Rp ${_formatCurrencyFull(totalActual)}',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  const Text(
+                    ' • Sisa: ',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  Text(
+                    remainingFromPlan >= 0
+                        ? 'Rp ${_formatCurrencyFull(remainingFromPlan)}'
+                        : '-Rp ${_formatCurrencyFull(remainingFromPlan.abs())}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: remainingFromPlan >= 0 ? Colors.green.shade200 : Colors.red.shade200,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+        backgroundColor: bgColor,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  String _formatCurrencyFull(double amount) {
+    final str = amount.toStringAsFixed(0);
+    final buffer = StringBuffer();
+    final length = str.length;
+    for (var i = 0; i < length; i++) {
+      if (i > 0 && (length - i) % 3 == 0) {
+        buffer.write('.');
+      }
+      buffer.write(str[i]);
+    }
+    return buffer.toString();
   }
 
   Future<void> _showAddDayDialog() async {
