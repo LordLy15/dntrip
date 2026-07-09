@@ -19,6 +19,7 @@ class CreateTripRequest extends FormRequest
             'title' => ['required', 'string', 'min:1', 'max:255'],
             'destination' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'plan_budget' => ['nullable', 'numeric', 'min:0'],
             'start_date' => ['required', 'date', 'after_or_equal:today'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
         ];

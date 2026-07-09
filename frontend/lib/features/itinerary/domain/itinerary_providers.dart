@@ -221,6 +221,63 @@ class ItineraryNotifier extends _$ItineraryNotifier {
       state = currentData;
     }
   }
+
+  /// Skip/cancel an activity
+  Future<void> skipActivity(int activityId) async {
+    final currentData = state;
+    if (currentData == null) return;
+    final tripId = currentData.tripId;
+    if (tripId == null) return;
+
+    int? targetDayId;
+    for (final day in currentData.days) {
+      for (final a in day.activities) {
+        if (a.id == activityId) { targetDayId = day.id; break; }
+      }
+      if (targetDayId != null) break;
+    }
+    if (targetDayId == null) return;
+
+    // Optimistic update - mark as skipped
+    final updatedDays = currentData.days.map((day) {
+      if (day.id == targetDayId) {
+        return TripDayModel(
+          id: day.id,
+          dayNumber: day.dayNumber,
+          date: day.date,
+          notes: day.notes,
+          activities: day.activities.map((a) {
+            if (a.id == activityId) {
+              return ActivityModel(
+                id: a.id,
+                title: a.title,
+                description: a.description,
+                category: a.category,
+                estimatedCost: a.estimatedCost,
+                actualCost: null,
+                status: 'skipped',
+                isUnplanned: a.isUnplanned,
+                plannedStartTime: a.plannedStartTime,
+                plannedEndTime: a.plannedEndTime,
+                actualStartTime: a.actualStartTime,
+                actualEndTime: a.actualEndTime,
+              );
+            }
+            return a;
+          }).toList(),
+        );
+      }
+      return day;
+    }).toList();
+
+    state = ItineraryData(tripId: tripId, days: updatedDays);
+
+    try {
+      await ref.read(itineraryRepositoryProvider).skipActivity(tripId, activityId);
+    } catch (_) {
+      state = currentData;
+    }
+  }
 }
 
 @riverpod

@@ -9,8 +9,9 @@ import 'activity_complete_sheet.dart';
 
 class ItineraryScreen extends ConsumerStatefulWidget {
   final int tripId;
+  final int? planBudget;
 
-  const ItineraryScreen({super.key, required this.tripId});
+  const ItineraryScreen({super.key, required this.tripId, this.planBudget});
 
   @override
   ConsumerState<ItineraryScreen> createState() => _ItineraryScreenState();
@@ -20,7 +21,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
     });
@@ -62,15 +62,42 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     );
   }
 
+  Future<void> _skipActivity(int activityId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Batalkan Kegiatan?'),
+        content: const Text('Kegiatan ini akan ditandai sebagai dibatalkan.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Tidak'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Ya, Batalkan'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await ref.read(itineraryNotifierProvider.notifier).skipActivity(activityId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Kegiatan dibatalkan')),
+        );
+      }
+    }
+  }
+
   Future<void> _showAddDayDialog() async {
     final data = ref.read(itineraryNotifierProvider);
     if (data == null) return;
 
-    // Calculate next day number
     final lastDay = data.days.isEmpty ? 0 : data.days.map((d) => d.dayNumber ?? 0).reduce((a, b) => a > b ? a : b);
     final nextDayNumber = lastDay + 1;
 
-    // Get suggested date (tomorrow if no days, otherwise day after last)
     DateTime suggestedDate = DateTime.now().add(const Duration(days: 1));
     if (data.days.isNotEmpty) {
       try {
@@ -128,9 +155,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 );
                 return;
               }
-              Navigator.pop(ctx, {
-                'date': dateController.text,
-              });
+              Navigator.pop(ctx, {'date': dateController.text});
             },
             child: const Text('Tambah'),
           ),
@@ -144,7 +169,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   }
 
   Future<void> _addDay(String date) async {
-    // Validate date format
     if (date.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tanggal tidak boleh kosong')),
@@ -152,7 +176,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       return;
     }
 
-    // Validate date format YYYY-MM-DD
     final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
     if (!dateRegex.hasMatch(date)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,16 +185,11 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     }
 
     try {
-      // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
             children: [
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
               SizedBox(width: 16),
               Text('Menambahkan hari...'),
             ],
@@ -181,42 +199,21 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       );
 
       final repo = ref.read(itineraryRepositoryProvider);
-      final newDay = await repo.createDay(tripId: widget.tripId, date: date);
-      debugPrint('Day created successfully: $newDay');
-
-      // Refresh itinerary
+      await repo.createDay(tripId: widget.tripId, date: date);
       await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Hari berhasil ditambahkan!'),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Hari berhasil ditambahkan!'), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       debugPrint('Error adding day: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        String errorMessage = 'Gagal menambah hari';
-        if (e.toString().contains('401')) {
-          errorMessage = 'Sesi telah berakhir. Silakan login kembali.';
-        } else if (e.toString().contains('403')) {
-          errorMessage = 'Anda tidak memiliki akses untuk menambah hari.';
-        } else if (e.toString().contains('404')) {
-          errorMessage = 'Trip tidak ditemukan.';
-        } else if (e.toString().contains('422')) {
-          errorMessage = 'Data tidak valid. Periksa format tanggal.';
-        } else if (e.toString().contains('SocketException') || e.toString().contains('Connection')) {
-          errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
-        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Gagal menambah hari: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -230,7 +227,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     for (final day in data.days) {
       for (final a in day.activities) {
         if (a.isCompleted) {
-          totalActual += a.actualCost ?? 0;
+          totalActual += (a.actualCost ?? 0).toDouble();
         }
       }
     }
@@ -240,8 +237,9 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       isScrollControlled: true,
       builder: (ctx) => SuddenExpenseSheet(
         tripId: widget.tripId,
-        planBudget: 0,
+        planBudget: (widget.planBudget ?? 0).toDouble(),
         currentTotal: totalActual,
+        days: data.days,
       ),
     );
   }
@@ -254,48 +252,38 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   Widget build(BuildContext context) {
     final data = ref.watch(itineraryNotifierProvider);
 
-    // Show loading spinner while data is null
     if (data == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Itinerary'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.account_balance_wallet),
-              onPressed: _showSuddenExpenseSheet,
-              tooltip: 'Pengeluaran Mendadak',
-            ),
-          ],
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Memuat itinerary...'),
-            ],
-          ),
-        ),
+        appBar: AppBar(title: const Text('Itinerary')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     // Calculate statistics
     double totalEstimated = 0;
     double totalActual = 0;
+    int completedCount = 0;
+    int cancelledCount = 0;
+    int totalCount = 0;
 
     for (final day in data.days) {
       for (final a in day.activities) {
-        if (!(a.isUnplanned ?? false)) {
+        totalCount++;
+        if (a.isCompleted) {
+          completedCount++;
           totalEstimated += (a.estimatedCost ?? 0).toDouble();
-          if (a.isCompleted) {
-            totalActual += (a.actualCost ?? 0).toDouble();
-          }
+          totalActual += (a.actualCost ?? 0).toDouble();
+        } else if (a.isSkipped) {
+          cancelledCount++;
+          totalEstimated += (a.estimatedCost ?? 0).toDouble();
+        } else {
+          totalEstimated += (a.estimatedCost ?? 0).toDouble();
         }
       }
     }
 
-    final remainingBudget = totalEstimated - totalActual;
+    final planBudget = (widget.planBudget ?? 0).toDouble();
+    final remainingFromPlan = planBudget - totalActual;
     final percentage = totalEstimated > 0
         ? (totalActual / totalEstimated * 100).clamp(0.0, 200.0)
         : 0.0;
@@ -338,58 +326,65 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                     children: [
                       const Icon(Icons.account_balance_wallet, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      const Expanded(
-                        child: Text(
-                          'Ringkasan Trip',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Ringkasan Trip',
+                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '$completedCount/$totalCount kegiatan selesai • $cancelledCount dibatalkan',
+                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildStatItem('Estimasi', 'Rp ${_formatCurrency(totalEstimated)}'),
-                      _buildStatItem('Realita', 'Rp ${_formatCurrency(totalActual)}'),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: (percentage / 100).clamp(0.0, 1.0),
-                      backgroundColor: Colors.white30,
-                      valueColor: AlwaysStoppedAnimation(
-                        percentage > 100 ? Colors.red : Colors.green,
-                      ),
-                      minHeight: 8,
+
+                  // Plan Budget vs Actual
+                  if (planBudget > 0) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatItem('Plan Budget', 'Rp ${_formatCurrency(planBudget)}'),
+                        _buildStatItem('Realita', 'Rp ${_formatCurrency(totalActual)}'),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${percentage.toStringAsFixed(0)}% dari estimasi',
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    const SizedBox(height: 8),
+                    Text(
+                      remainingFromPlan >= 0
+                          ? 'Sisa budget: Rp ${_formatCurrency(remainingFromPlan)}'
+                          : 'Lebih dari budget: Rp ${_formatCurrency(remainingFromPlan.abs())}',
+                      style: TextStyle(
+                        color: remainingFromPlan >= 0 ? Colors.green.shade100 : Colors.red.shade200,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
-                      Text(
-                        remainingBudget >= 0
-                            ? 'Sisa: Rp ${_formatCurrency(remainingBudget)}'
-                            : 'Lebih: Rp ${_formatCurrency(remainingBudget.abs())}',
-                        style: TextStyle(
-                          color: remainingBudget >= 0 ? Colors.green.shade100 : Colors.red.shade200,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // Progress
+                  if (!data.days.isEmpty && totalCount > 0) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: (completedCount / totalCount).clamp(0.0, 1.0),
+                        backgroundColor: Colors.white30,
+                        valueColor: AlwaysStoppedAnimation(Colors.green),
+                        minHeight: 8,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${completedCount}/$totalCount kegiatan selesai (${((completedCount / totalCount) * 100).toStringAsFixed(0)}%)',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -404,10 +399,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                     children: [
                       Icon(Icons.calendar_today, size: 64, color: Colors.grey[400]),
                       const SizedBox(height: 16),
-                      Text(
-                        'Belum ada itinerary',
-                        style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                      ),
+                      Text('Belum ada itinerary', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
                       const SizedBox(height: 8),
                       Text(
                         'Tekan tombol + di bawah untuk menambah hari perjalanan',
@@ -438,10 +430,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.blue,
-                child: Icon(Icons.calendar_today, color: Colors.white),
-              ),
+              leading: const CircleAvatar(backgroundColor: Colors.blue, child: Icon(Icons.calendar_today, color: Colors.white)),
               title: const Text('Tambah Hari'),
               subtitle: const Text('Tambahkan hari perjalanan baru'),
               onTap: () {
@@ -450,10 +439,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
               },
             ),
             ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.orange,
-                child: Icon(Icons.flash_on, color: Colors.white),
-              ),
+              leading: const CircleAvatar(backgroundColor: Colors.orange, child: Icon(Icons.flash_on, color: Colors.white)),
               title: const Text('Pengeluaran Mendadak'),
               subtitle: const Text('Catat pengeluaran di luar rencana'),
               onTap: () {
@@ -480,21 +466,40 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
   }
 
   Widget _buildDayCard(TripDayModel day) {
+    double dayEstimated = 0;
+    double dayActual = 0;
+    int completedInDay = 0;
+    int totalInDay = day.activities.length;
+
+    for (final a in day.activities) {
+      if (a.isCompleted) {
+        completedInDay++;
+        dayActual += (a.actualCost ?? 0).toDouble();
+      }
+      dayEstimated += (a.estimatedCost ?? 0).toDouble();
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Text(
-            '${day.dayNumber}',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
+          backgroundColor: completedInDay == totalInDay && totalInDay > 0 ? Colors.green : Theme.of(context).colorScheme.primary,
+          child: completedInDay == totalInDay && totalInDay > 0
+              ? const Icon(Icons.check, color: Colors.white)
+              : Text('${day.dayNumber}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
-        title: Text(
-          'Hari ${day.dayNumber}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        title: Text('Hari ${day.dayNumber}', style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(day.date ?? 'Tanggal tidak tersedia'),
+            if (totalInDay > 0)
+              Text(
+                '$completedInDay/$totalInDay selesai • Rp ${_formatCurrency(dayActual)}',
+                style: const TextStyle(fontSize: 12),
+              ),
+          ],
         ),
-        subtitle: Text(day.date ?? 'Tanggal tidak tersedia'),
         initiallyExpanded: true,
         children: [
           if (day.activities.isEmpty)
@@ -503,39 +508,62 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
               child: Text('Belum ada kegiatan di hari ini'),
             )
           else
-            ...day.activities.map<Widget>(
-              (a) => ListTile(
-                leading: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: a.isCompleted ? Colors.green : Colors.grey.shade300,
-                  child: Icon(
-                    a.isCompleted ? Icons.check : Icons.schedule,
-                    size: 16,
-                    color: Colors.white,
-                  ),
-                ),
-                title: Text(a.title ?? 'Tanpa judul'),
-                subtitle: Text('Rp ${_formatCurrency((a.estimatedCost ?? 0).toDouble())}'),
-                trailing: a.isCompleted
-                    ? Text(
-                        'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}',
-                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                      )
-                    : null,
-                onTap: a.isCompleted ? null : () => _showCompleteSheet(a.id),
-              ),
-            ),
+            ...day.activities.map<Widget>((a) => _buildActivityTile(a)),
           ListTile(
-            leading: const CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.add, size: 16, color: Colors.white),
-            ),
+            leading: const CircleAvatar(radius: 16, backgroundColor: Colors.blue, child: Icon(Icons.add, size: 16, color: Colors.white)),
             title: const Text('Tambah Kegiatan', style: TextStyle(color: Colors.blue)),
             onTap: () => _navigateToAddActivity(day.id),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActivityTile(ActivityModel a) {
+    Color statusColor;
+    IconData statusIcon;
+    String statusText;
+
+    if (a.isCompleted) {
+      statusColor = Colors.green;
+      statusIcon = Icons.check_circle;
+      statusText = 'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}';
+    } else if (a.isSkipped) {
+      statusColor = Colors.red;
+      statusIcon = Icons.cancel;
+      statusText = 'Dibatalkan';
+    } else {
+      statusColor = Colors.grey;
+      statusIcon = Icons.schedule;
+      statusText = 'Rp ${_formatCurrency((a.estimatedCost ?? 0).toDouble())}';
+    }
+
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 16,
+        backgroundColor: statusColor,
+        child: Icon(statusIcon, size: 16, color: Colors.white),
+      ),
+      title: Text(a.title ?? 'Tanpa judul'),
+      subtitle: Text(statusText, style: TextStyle(color: statusColor, fontSize: 12)),
+      trailing: a.isPending
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.check, color: Colors.green),
+                  onPressed: () => _showCompleteSheet(a.id),
+                  tooltip: 'Selesai',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.red),
+                  onPressed: () => _skipActivity(a.id),
+                  tooltip: 'Batalkan',
+                ),
+              ],
+            )
+          : null,
+      onTap: a.isPending ? () => _showCompleteSheet(a.id) : null,
     );
   }
 

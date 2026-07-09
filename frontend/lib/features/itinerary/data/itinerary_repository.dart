@@ -50,6 +50,9 @@ class ItineraryRepository {
         actualCost: actualCost,
       );
 
+  Future<void> skipActivity(int tripId, int activityId) =>
+      _remote.skipActivity(tripId, activityId);
+
   // Sudden Expenses Methods
   Future<List<SuddenExpenseModel>> getSuddenExpenses(int tripId) {
     return _suddenExpenseDatasource.getSuddenExpenses(tripId);

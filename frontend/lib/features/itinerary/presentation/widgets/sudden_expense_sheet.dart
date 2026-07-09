@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/expense_category_model.dart';
+import '../../data/models/trip_day_model.dart';
 import '../../domain/itinerary_providers.dart';
 
 class SuddenExpenseSheet extends ConsumerStatefulWidget {
   final int tripId;
   final double? planBudget;
   final double? currentTotal;
+  final List<TripDayModel>? days;
 
   const SuddenExpenseSheet({
     super.key,
     required this.tripId,
     this.planBudget,
     this.currentTotal,
+    this.days,
   });
 
   @override

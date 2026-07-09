@@ -7,9 +7,11 @@ use App\Http\Requests\CreateTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Http\Requests\JoinTripRequest;
 use App\Models\Trip;
+use App\Models\TripDay;
 use App\Models\TripMember;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TripController extends Controller
 {
@@ -47,11 +49,29 @@ class TripController extends Controller
             'title' => $request->title,
             'destination' => $request->destination,
             'description' => $request->description,
+            'plan_budget' => $request->plan_budget ?? 0,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'share_code' => Trip::generateShareCode(),
             'status' => 'planned',
         ]);
+
+        // Auto-generate trip days based on start and end dates
+        if ($trip->start_date && $trip->end_date) {
+            $startDate = Carbon::parse($trip->start_date);
+            $endDate = Carbon::parse($trip->end_date);
+            $dayNumber = 1;
+
+            while ($startDate->lte($endDate)) {
+                TripDay::create([
+                    'trip_id' => $trip->id,
+                    'day_number' => $dayNumber,
+                    'date' => $startDate->format('Y-m-d'),
+                ]);
+                $startDate->addDay();
+                $dayNumber++;
+            }
+        }
 
         // Add owner as member
         TripMember::create([
@@ -63,6 +83,7 @@ class TripController extends Controller
 
         $trip->load('owner');
         $trip->load('members');
+        $trip->load('days');
 
         return response()->json([
             'status' => 'success',
