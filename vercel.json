@@ -1,6 +1,8 @@
 {
-  "buildCommand": "cd frontend && flutter pub get && flutter build web",
-  "outputDirectory": "frontend/build/web",
+  "outputDirectory": "dist",
+  "buildCommand": "echo 'Using pre-built dist'",
+  "installCommand": "echo 'No install needed'",
+  "framework": null,
   "rewrites": [
     {"source": "/(.*)", "destination": "/index.html"}
   ]
