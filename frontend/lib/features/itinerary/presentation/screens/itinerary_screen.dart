@@ -286,10 +286,10 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
 
     for (final day in data.days) {
       for (final a in day.activities) {
-        if (!a.isUnplanned) {
-          totalEstimated += a.estimatedCost;
+        if (!(a.isUnplanned ?? false)) {
+          totalEstimated += (a.estimatedCost ?? 0).toDouble();
           if (a.isCompleted) {
-            totalActual += a.actualCost ?? 0;
+            totalActual += (a.actualCost ?? 0).toDouble();
           }
         }
       }
@@ -515,7 +515,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                   ),
                 ),
                 title: Text(a.title ?? 'Tanpa judul'),
-                subtitle: Text('Rp ${_formatCurrency(a.estimatedCost.toDouble())}'),
+                subtitle: Text('Rp ${_formatCurrency((a.estimatedCost ?? 0).toDouble())}'),
                 trailing: a.isCompleted
                     ? Text(
                         'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}',

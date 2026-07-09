@@ -24,10 +24,13 @@ mixin _$ActivityModel {
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
-  int get estimatedCost => throw _privateConstructorUsedError;
+  @JsonKey(name: 'estimated_cost')
+  int? get estimatedCost => throw _privateConstructorUsedError;
+  @JsonKey(name: 'actual_cost')
   int? get actualCost => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
-  bool get isUnplanned => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_unplanned')
+  bool? get isUnplanned => throw _privateConstructorUsedError;
   String? get plannedStartTime => throw _privateConstructorUsedError;
   String? get plannedEndTime => throw _privateConstructorUsedError;
   String? get actualStartTime => throw _privateConstructorUsedError;
@@ -50,10 +53,10 @@ abstract class $ActivityModelCopyWith<$Res> {
       String? title,
       String? description,
       String? category,
-      int estimatedCost,
-      int? actualCost,
+      @JsonKey(name: 'estimated_cost') int? estimatedCost,
+      @JsonKey(name: 'actual_cost') int? actualCost,
       String? status,
-      bool isUnplanned,
+      @JsonKey(name: 'is_unplanned') bool? isUnplanned,
       String? plannedStartTime,
       String? plannedEndTime,
       String? actualStartTime,
@@ -77,10 +80,10 @@ class _$ActivityModelCopyWithImpl<$Res, $Val extends ActivityModel>
     Object? title = freezed,
     Object? description = freezed,
     Object? category = freezed,
-    Object? estimatedCost = null,
+    Object? estimatedCost = freezed,
     Object? actualCost = freezed,
     Object? status = freezed,
-    Object? isUnplanned = null,
+    Object? isUnplanned = freezed,
     Object? plannedStartTime = freezed,
     Object? plannedEndTime = freezed,
     Object? actualStartTime = freezed,
@@ -103,10 +106,10 @@ class _$ActivityModelCopyWithImpl<$Res, $Val extends ActivityModel>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as String?,
-      estimatedCost: null == estimatedCost
+      estimatedCost: freezed == estimatedCost
           ? _value.estimatedCost
           : estimatedCost // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       actualCost: freezed == actualCost
           ? _value.actualCost
           : actualCost // ignore: cast_nullable_to_non_nullable
@@ -115,10 +118,10 @@ class _$ActivityModelCopyWithImpl<$Res, $Val extends ActivityModel>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
-      isUnplanned: null == isUnplanned
+      isUnplanned: freezed == isUnplanned
           ? _value.isUnplanned
           : isUnplanned // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       plannedStartTime: freezed == plannedStartTime
           ? _value.plannedStartTime
           : plannedStartTime // ignore: cast_nullable_to_non_nullable
@@ -152,10 +155,10 @@ abstract class _$$ActivityModelImplCopyWith<$Res>
       String? title,
       String? description,
       String? category,
-      int estimatedCost,
-      int? actualCost,
+      @JsonKey(name: 'estimated_cost') int? estimatedCost,
+      @JsonKey(name: 'actual_cost') int? actualCost,
       String? status,
-      bool isUnplanned,
+      @JsonKey(name: 'is_unplanned') bool? isUnplanned,
       String? plannedStartTime,
       String? plannedEndTime,
       String? actualStartTime,
@@ -177,10 +180,10 @@ class __$$ActivityModelImplCopyWithImpl<$Res>
     Object? title = freezed,
     Object? description = freezed,
     Object? category = freezed,
-    Object? estimatedCost = null,
+    Object? estimatedCost = freezed,
     Object? actualCost = freezed,
     Object? status = freezed,
-    Object? isUnplanned = null,
+    Object? isUnplanned = freezed,
     Object? plannedStartTime = freezed,
     Object? plannedEndTime = freezed,
     Object? actualStartTime = freezed,
@@ -203,10 +206,10 @@ class __$$ActivityModelImplCopyWithImpl<$Res>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as String?,
-      estimatedCost: null == estimatedCost
+      estimatedCost: freezed == estimatedCost
           ? _value.estimatedCost
           : estimatedCost // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       actualCost: freezed == actualCost
           ? _value.actualCost
           : actualCost // ignore: cast_nullable_to_non_nullable
@@ -215,10 +218,10 @@ class __$$ActivityModelImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
-      isUnplanned: null == isUnplanned
+      isUnplanned: freezed == isUnplanned
           ? _value.isUnplanned
           : isUnplanned // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       plannedStartTime: freezed == plannedStartTime
           ? _value.plannedStartTime
           : plannedStartTime // ignore: cast_nullable_to_non_nullable
@@ -247,10 +250,10 @@ class _$ActivityModelImpl extends _ActivityModel {
       this.title,
       this.description,
       this.category,
-      required this.estimatedCost,
-      this.actualCost,
+      @JsonKey(name: 'estimated_cost') this.estimatedCost,
+      @JsonKey(name: 'actual_cost') this.actualCost,
       this.status,
-      required this.isUnplanned,
+      @JsonKey(name: 'is_unplanned') this.isUnplanned,
       this.plannedStartTime,
       this.plannedEndTime,
       this.actualStartTime,
@@ -269,13 +272,16 @@ class _$ActivityModelImpl extends _ActivityModel {
   @override
   final String? category;
   @override
-  final int estimatedCost;
+  @JsonKey(name: 'estimated_cost')
+  final int? estimatedCost;
   @override
+  @JsonKey(name: 'actual_cost')
   final int? actualCost;
   @override
   final String? status;
   @override
-  final bool isUnplanned;
+  @JsonKey(name: 'is_unplanned')
+  final bool? isUnplanned;
   @override
   final String? plannedStartTime;
   @override
@@ -355,10 +361,10 @@ abstract class _ActivityModel extends ActivityModel {
       final String? title,
       final String? description,
       final String? category,
-      required final int estimatedCost,
-      final int? actualCost,
+      @JsonKey(name: 'estimated_cost') final int? estimatedCost,
+      @JsonKey(name: 'actual_cost') final int? actualCost,
       final String? status,
-      required final bool isUnplanned,
+      @JsonKey(name: 'is_unplanned') final bool? isUnplanned,
       final String? plannedStartTime,
       final String? plannedEndTime,
       final String? actualStartTime,
@@ -377,13 +383,16 @@ abstract class _ActivityModel extends ActivityModel {
   @override
   String? get category;
   @override
-  int get estimatedCost;
+  @JsonKey(name: 'estimated_cost')
+  int? get estimatedCost;
   @override
+  @JsonKey(name: 'actual_cost')
   int? get actualCost;
   @override
   String? get status;
   @override
-  bool get isUnplanned;
+  @JsonKey(name: 'is_unplanned')
+  bool? get isUnplanned;
   @override
   String? get plannedStartTime;
   @override
