@@ -1,0 +1,44 @@
+# Render Blueprint
+# Deploys Laravel API with PostgreSQL database
+
+services:
+  # Laravel API Backend
+  - type: web
+    name: dntrip-api
+    env: php
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan migrate --force
+    startCommand: |
+      php artisan serve --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /api/up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://dntrip-lilac.vercel.app
+
+databases:
+  - name: dntrip-db
+    plan: free
+    databaseName: dntrip
+    ipAllowList: []

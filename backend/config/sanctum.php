@@ -15,13 +15,9 @@ return [
     |
     */
 
-    'stateful' => [
-        'localhost:3000',
-        'localhost:8000',
-        '127.0.0.1:8000',
-        'dntrip-lilac.vercel.app',
-        'dntrip-lilac-git-*.vercel.app',
-    ],
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS',
+        'localhost:3000,localhost:8000,127.0.0.1:8000,dntrip-lilac.vercel.app'
+    )),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,8 +1,9 @@
 class AppConstants {
   AppConstants._();
 
-  // API - Production
-  static const String baseUrl = 'https://dntrip-production.up.railway.app/api';
+  // API - Production (Render.com)
+  // TODO: Update with Render deployment URL after setup
+  static const String baseUrl = 'https://dntrip-api.onrender.com/api';
   static const Duration connectionTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 
