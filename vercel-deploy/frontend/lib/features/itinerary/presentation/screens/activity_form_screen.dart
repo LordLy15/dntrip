@@ -43,6 +43,8 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Create activity with optimistic update - UI updates immediately
     await ref.read(itineraryNotifierProvider.notifier).createActivity(
       tripDayId: widget.tripDayId,
       title: _titleCtrl.text,
@@ -50,6 +52,8 @@ class _ActivityFormScreenState extends ConsumerState<ActivityFormScreen> {
       category: _category,
       estimatedCost: int.tryParse(_costCtrl.text),
     );
+
+    // Close screen immediately - no need to wait for network
     if (mounted) Navigator.pop(context);
   }
 
