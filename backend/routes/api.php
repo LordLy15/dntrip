@@ -7,6 +7,11 @@ use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\SuddenExpenseController;
 use Illuminate\Support\Facades\Route;
 
+// Health check
+Route::get('/up', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 // Public routes with rate limiting
 Route::middleware('throttle:sanctum')->group(function () {
     Route::post('register', [AuthController::class, 'register']);

@@ -15,4 +15,23 @@ require __DIR__.'/../vendor/autoload.php';
 
 // Bootstrap Laravel and handle the request...
 $app = require_once __DIR__.'/../bootstrap/app.php';
+
+// Set the request URI for Laravel routing
+$uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+// Remove query string if present
+$uri = strtok($uri, '?');
+
+// Strip the /api prefix if present (Vercel routes /api/* to this file)
+if (str_starts_with($uri, '/api')) {
+    $uri = substr($uri, 4);
+}
+if ($uri === '') {
+    $uri = '/';
+}
+
+// Override the request URI for Laravel
+$_SERVER['REQUEST_URI'] = $uri;
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+
 $app->handleRequest(Request::capture());
