@@ -1,9 +1,10 @@
 class AppConstants {
   AppConstants._();
 
-  // API - Production (Render.com)
-  // TODO: Update with Render deployment URL after setup
-  static const String baseUrl = 'https://dntrip-api.onrender.com/api';
+  // API - Vercel Backend
+  // TODO: Update with Vercel backend URL after deployment
+  // Example: https://dntrip-api.vercel.app/api
+  static const String baseUrl = 'https://dntrip-backend.vercel.app/api';
   static const Duration connectionTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 

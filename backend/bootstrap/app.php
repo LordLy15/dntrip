@@ -7,12 +7,10 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
-        apiPrefix: '/api',
-        commands: __DIR__.'/../routes/console.php',
+        apiPrefix: 'api',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -38,3 +36,13 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect('/');
         });
     })->create();
+
+// Vercel: Set URL for proper routing
+if (isset($_SERVER['VERCEL_URL'])) {
+    $app['config']->set('app.url', 'https://' . $_SERVER['VERCEL_URL']);
+    $app['config']->set('sanctum.stateful', explode(',', env('SANCTUM_STATEFUL_DOMAINS',
+        'localhost:3000,dntrip-lilac.vercel.app'
+    )));
+}
+
+return $app;
