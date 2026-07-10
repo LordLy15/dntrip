@@ -1,4 +1,4 @@
-name: Build and Deploy to Vercel
+name: Build and Deploy to Vercel (Frontend) & Railway (Backend)
 
 on:
   push:
@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  # Frontend - Flutter Web to Vercel
+  frontend-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,3 +38,11 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           working-directory: ./frontend/build/web
+
+  # Backend - Laravel to Railway
+  # Note: Railway deployment is triggered automatically via GitHub integration
+  # Configure Railway at: https://railway.app/dashboard
+  # Steps:
+  # 1. Connect GitHub repo to Railway
+  # 2. Railway auto-detects Laravel from railway.toml
+  # 3. Set environment variables in Railway dashboard
