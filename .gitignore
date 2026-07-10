@@ -29,6 +29,8 @@ frontend/.flutter-plugins-dependencies
 frontend/pubspec.lock
 frontend/.packages
 frontend/build/
+frontend/dist/
+public/
 
 # Database
 *.sqlite
@@ -47,3 +49,4 @@ composer.phar
 
 .vercel
 .env*
+*.local
