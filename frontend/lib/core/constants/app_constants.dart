@@ -1,9 +1,8 @@
 class AppConstants {
   AppConstants._();
 
-  // API - Vercel Backend
-  // TODO: Update with Vercel backend URL after deployment
-  // Example: https://dntrip-api.vercel.app/api
+  // API - Vercel Backend (dntrip-backend)
+  // After deploying backend to Vercel, update this URL
   static const String baseUrl = 'https://dntrip-backend.vercel.app/api';
   static const Duration connectionTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
