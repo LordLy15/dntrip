@@ -9,17 +9,17 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes with rate limiting
 Route::middleware('throttle:sanctum')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
 });
 
 // Protected routes
 Route::middleware(['throttle:api', 'auth:sanctum'])->group(function () {
     // Auth
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
-    Route::put('/user', [AuthController::class, 'updateProfile']);
-    Route::patch('/user', [AuthController::class, 'updateProfile']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('user', [AuthController::class, 'user']);
+    Route::put('user', [AuthController::class, 'updateProfile']);
+    Route::patch('user', [AuthController::class, 'updateProfile']);
 
     // Trips
     Route::get('/trips', [TripController::class, 'index']);

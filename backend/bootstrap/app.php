@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 $app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
-        apiPrefix: 'api',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -18,7 +17,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
-            if ($request->is('api/*') || $request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Route not found.',
@@ -27,19 +26,18 @@ $app = Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            if ($request->is('api/*') || $request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Unauthenticated.',
                 ], 401);
             }
-            return redirect('/');
         });
     })->create();
 
 // Vercel: Set URL for proper routing
-if (isset($_SERVER['VERCEL_URL'])) {
-    $app['config']->set('app.url', 'https://' . $_SERVER['VERCEL_URL']);
+if (getenv('VERCEL_URL')) {
+    $app['config']->set('app.url', 'https://' . getenv('VERCEL_URL'));
     $app['config']->set('sanctum.stateful', explode(',', env('SANCTUM_STATEFUL_DOMAINS',
         'localhost:3000,dntrip-lilac.vercel.app'
     )));
