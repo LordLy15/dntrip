@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Http\Middleware\HandleCors;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,19 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(function ($request, $next) {
-            // Handle CORS preflight requests
-            if ($request->isMethod('OPTIONS')) {
-                $headers = [
-                    'Access-Control-Allow-Origin' => '*',
-                    'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-                    'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-                    'Access-Control-Max-Age' => '86400',
-                ];
-                return response('', 204)->withHeaders($headers);
-            }
-            return $next($request);
-        });
+        $middleware->append(HandleCors::class);
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
