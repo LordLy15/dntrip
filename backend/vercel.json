@@ -1,18 +1,20 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.php": {
-      "runtime": "vercel-php@0.6.1"
-    }
-  },
-  "routes": [
+  "outputDirectory": "public",
+  "publicDirectory": "public",
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.php"
+      "source": "/api/(.*)",
+      "destination": "/api/index.php"
     },
     {
-      "src": "/up",
-      "dest": "/api/up.php"
+      "source": "/up",
+      "destination": "/api/up.php"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "PHP_VERSION": "8.2"
+    }
+  }
 }
