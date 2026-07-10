@@ -4,7 +4,6 @@
 /public/hot
 /public/storage
 /storage/*.key
-/vendor
 .env
 .env.backup
 .env.production
@@ -20,3 +19,6 @@ yarn-error.log
 
 # Vercel
 .vercel
+
+# NOTE: /vendor is intentionally NOT ignored for Vercel deployment
+# Run: composer install --no-dev --optimize-autoloader locally and commit

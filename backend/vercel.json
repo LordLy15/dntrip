@@ -3,16 +3,6 @@
   "outputDirectory": "public",
   "routes": [
     {
-      "src": "/api/login",
-      "dest": "/api/index.php",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-    },
-    {
-      "src": "/api/register",
-      "dest": "/api/index.php",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-    },
-    {
       "src": "/api/(.*)",
       "dest": "/api/index.php"
     }
@@ -43,10 +33,5 @@
         }
       ]
     }
-  ],
-  "build": {
-    "env": {
-      "PHP_VERSION": "8.2"
-    }
-  }
+  ]
 }
