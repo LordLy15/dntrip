@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
@@ -9,9 +8,9 @@ import '../../features/trips/presentation/screens/trip_detail_screen.dart';
 import '../../features/trips/presentation/screens/trip_form_screen.dart';
 import '../../features/trips/presentation/screens/join_trip_screen.dart';
 import '../../features/itinerary/presentation/screens/itinerary_screen.dart';
+import '../../features/itinerary/presentation/screens/itinerary_dashboard_screen.dart';
 import '../../features/itinerary/presentation/screens/activity_form_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../features/itinerary/domain/itinerary_providers.dart';
 import '../../features/itinerary/data/models/trip_day_model.dart';
 
 part 'app_router.g.dart';
@@ -33,15 +32,26 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
       GoRoute(
         path: '/trips/:id/itinerary',
-        builder: (context, state) => ItineraryScreen(
-          tripId: int.parse(state.pathParameters['id']!),
-        ),
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final budgetStr = state.uri.queryParameters['budget'];
+          final budget = budgetStr != null ? int.tryParse(budgetStr) ?? 0 : 0;
+          return ItineraryScreen(tripId: id, planBudget: budget);
+        },
+      ),
+      GoRoute(
+        path: '/trips/:id/dashboard',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final budgetStr = state.uri.queryParameters['budget'];
+          final budget = budgetStr != null ? int.tryParse(budgetStr) ?? 0 : 0;
+          return ItineraryDashboardScreen(tripId: id, planBudget: budget.toDouble());
+        },
       ),
       GoRoute(
         path: '/trips/:id/activities/new',
         builder: (context, state) {
           final dayId = int.parse(state.uri.queryParameters['dayId']!);
-          // Create a placeholder day model - in real usage this would be passed properly
           final day = TripDayModel(id: dayId, dayNumber: 0, date: '');
           return ActivityFormScreen(tripDayId: dayId, day: day);
         },

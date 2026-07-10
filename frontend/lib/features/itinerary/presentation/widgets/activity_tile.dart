@@ -26,14 +26,14 @@ class ActivityTile extends StatelessWidget {
       title: Row(
         children: [
           Expanded(child: Text(activity.title ?? 'Untitled')),
-          if (activity.isUnplanned) const UnplannedBadge(),
+          if (activity.isUnplanned == true) const UnplannedBadge(),
         ],
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            activity.estimatedCost > 0
+            (activity.estimatedCost ?? 0) > 0
                 ? _currency.format(activity.estimatedCost)
                 : 'No budget',
           ),

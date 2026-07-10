@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../data/models/itinerary_data.dart';
 import '../../data/models/trip_day_model.dart';
-import '../../data/models/activity_model.dart';
-import '../../data/models/sudden_expense_model.dart';
 import '../../domain/itinerary_providers.dart';
 
 class ItineraryDashboardScreen extends ConsumerStatefulWidget {
@@ -82,8 +79,6 @@ class _ItineraryDashboardScreenState extends ConsumerState<ItineraryDashboardScr
     });
 
     final planBudget = widget.planBudget;
-    final remaining = planBudget - totalActual - totalSudden;
-    final progressPercent = totalCount > 0 ? completedCount / totalCount : 0.0;
 
     return Scaffold(
       appBar: AppBar(
