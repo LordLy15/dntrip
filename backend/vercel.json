@@ -1,24 +1,25 @@
 {
   "version": 2,
   "outputDirectory": "public",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.php"
+      "src": "/api/login",
+      "dest": "/api/index.php",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     },
     {
-      "source": "/up",
-      "destination": "/api/up.php"
+      "src": "/api/register",
+      "dest": "/api/index.php",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.php"
     }
   ],
-  "build": {
-    "env": {
-      "PHP_VERSION": "8.2"
-    }
-  },
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -35,8 +36,17 @@
         {
           "key": "Access-Control-Allow-Credentials",
           "value": "true"
+        },
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
         }
       ]
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "PHP_VERSION": "8.2"
+    }
+  }
 }
