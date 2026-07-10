@@ -1,0 +1,161 @@
+<h2>Dashboard Trip - Mockup Design</h2>
+<p class="subtitle">Berikut preview tampilan dashboard dengan Pie Chart dan progress tracking</p>
+
+<div class="mockup">
+  <div class="mockup-header">Preview: Itinerary Dashboard</div>
+  <div class="mockup-body">
+    <!-- Phone Frame -->
+    <div style="background: #f5f5f5; padding: 16px; border-radius: 16px; max-width: 375px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+
+      <!-- App Bar -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 24px; height: 24px; border: 2px solid #333; border-radius: 4px;"></div>
+          <span style="font-weight: 600; font-size: 18px;">Itinerary</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <div style="background: #6366f1; color: white; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">
+            📊
+          </div>
+          <div style="background: #f59e0b; color: white; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">
+            ⚡
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget Summary Card -->
+      <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 20px; border-radius: 16px; color: white; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px;">
+            💰
+          </div>
+          <span style="font-size: 16px; font-weight: 600;">Ringkasan Budget</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="opacity: 0.8; font-size: 14px;">Plan Budget</span>
+          <span style="font-size: 16px; font-weight: 600;">Rp 5.000.000</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="opacity: 0.8; font-size: 14px;">Estimasi</span>
+          <span style="font-size: 16px;">Rp 4.500.000</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <span style="opacity: 0.8; font-size: 14px;">Realita</span>
+          <span style="font-size: 18px; font-weight: 700;">Rp 2.750.000</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div style="background: rgba(255,255,255,0.2); border-radius: 8px; height: 10px; margin-bottom: 12px;">
+          <div style="background: #22c55e; width: 55%; height: 100%; border-radius: 8px;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.9;">
+          <span>55% terpakai</span>
+          <span style="background: #22c55e; padding: 4px 10px; border-radius: 20px; font-weight: 600;">Sisa: Rp 2.250.000</span>
+        </div>
+      </div>
+
+      <!-- Pie Chart Card -->
+      <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div style="background: #ecfdf5; padding: 10px; border-radius: 10px;">
+            <span style="font-size: 20px;">📊</span>
+          </div>
+          <span style="font-size: 16px; font-weight: 600;">Pengeluaran per Kategori</span>
+        </div>
+
+        <!-- Pie Chart Visual -->
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div style="position: relative; width: 120px; height: 120px;">
+            <svg viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="20" stroke-dasharray="110 220"></circle>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#3b82f6" stroke-width="20" stroke-dasharray="55 220" stroke-dashoffset="-110"></circle>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#22c55e" stroke-width="20" stroke-dasharray="55 220" stroke-dashoffset="-165"></circle>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#8b5cf6" stroke-width="20" stroke-dasharray="33 220" stroke-dashoffset="-220"></circle>
+            </svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+              <div style="font-size: 18px; font-weight: 700;">Rp 2.7jt</div>
+              <div style="font-size: 10px; color: #666;">Total</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div style="flex: 1; font-size: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></div>
+              <span>Konsumsi 35%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></div>
+              <span>Transport 25%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></div>
+              <span>Hotel 25%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px;"></div>
+              <span>Atraksi 15%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Card -->
+      <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+          <div style="background: #e0e7ff; padding: 10px; border-radius: 10px;">
+            <span style="font-size: 20px;">📋</span>
+          </div>
+          <span style="font-size: 16px; font-weight: 600;">Progress Kegiatan</span>
+        </div>
+
+        <!-- Circular Progress -->
+        <div style="display: flex; align-items: center; gap: 24px;">
+          <div style="position: relative; width: 100px; height: 100px;">
+            <svg viewBox="0 0 100 100" style="transform: rotate(-90deg);">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="10"></circle>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" stroke-width="10" stroke-dasharray="188 252" stroke-linecap="round"></circle>
+            </svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+              <div style="font-size: 24px; font-weight: 700;">62%</div>
+              <div style="font-size: 10px; color: #666;">5/8</div>
+            </div>
+          </div>
+
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 24px; height: 24px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✓</div>
+              <span style="font-weight: 600;">Selesai: 5</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <div style="width: 24px; height: 24px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center;">⏳</div>
+              <span style="font-weight: 600;">Pending: 2</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 24px; height: 24px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</div>
+              <span style="font-weight: 600;">Batal: 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Fitur Utama:</h3>
+  <ul>
+    <li><strong>📊 Icon di AppBar</strong> - Navigasi ke dashboard chart</li>
+    <li><strong>💰 Ringkasan Budget</strong> - Plan vs Estimasi vs Realita</li>
+    <li><strong>🥧 Pie Chart</strong> - Breakdown pengeluaran per kategori</li>
+    <li><strong>📋 Progress</strong> - Selesai, Pending, Batal</li>
+    <li><strong>✓ Animasi Checkbox</strong> - Progress + Snackbar saat centang</li>
+  </ul>
+</div>
+
+<p style="margin-top: 24px; color: #666; font-size: 14px;">
+  Klik <strong>Next</strong> untuk melihat mockup checkbox animation, atau klik <strong>Done</strong> untuk melanjutkan ke implementasi.
+</p>
