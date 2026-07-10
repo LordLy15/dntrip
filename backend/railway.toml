@@ -1,8 +1,11 @@
 [railway]
   plugin = "nixpacks"
 
+[nixpacks]
+  php_version = 8.2
+
 [build]
-  command = "composer install --no-dev"
+  command = "composer install --no-dev --optimize-autoloader"
   builder = "nixpacks"
 
 [deploy]
