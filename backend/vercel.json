@@ -1,37 +1,18 @@
 {
   "version": 2,
   "outputDirectory": "public",
+  "cleanUrls": true,
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.php"
-    }
-  ],
-  "headers": [
+      "dest": "/api/index.php",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "https://dntrip-lilac.vercel.app"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization, Accept, Origin, X-Requested-With"
-        },
-        {
-          "key": "Access-Control-Allow-Credentials",
-          "value": "true"
-        },
-        {
-          "key": "Access-Control-Max-Age",
-          "value": "86400"
-        }
-      ]
+      "src": "/up",
+      "dest": "/api/index.php"
     }
   ]
 }

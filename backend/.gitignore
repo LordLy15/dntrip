@@ -20,5 +20,9 @@ yarn-error.log
 # Vercel
 .vercel
 
+# Cache files
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
 # NOTE: /vendor is intentionally NOT ignored for Vercel deployment
 # Run: composer install --no-dev --optimize-autoloader locally and commit
