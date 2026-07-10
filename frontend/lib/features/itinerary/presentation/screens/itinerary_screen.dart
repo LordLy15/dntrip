@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../data/models/activity_model.dart';
 import '../../data/models/trip_day_model.dart';
 import '../../domain/itinerary_providers.dart';
+import '../../../trips/domain/trip_providers.dart';
 import '../widgets/sudden_expense_sheet.dart';
 import 'activity_complete_sheet.dart';
 
 class ItineraryScreen extends ConsumerStatefulWidget {
   final int tripId;
   final int? planBudget;
+  final String? tripTitle;
+  final String? shareCode;
 
-  const ItineraryScreen({super.key, required this.tripId, this.planBudget});
+  const ItineraryScreen({
+    super.key,
+    required this.tripId,
+    this.planBudget,
+    this.tripTitle,
+    this.shareCode,
+  });
 
   @override
   ConsumerState<ItineraryScreen> createState() => _ItineraryScreenState();
@@ -23,11 +34,335 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+      // Load trip details for share code and members
+      ref.read(tripDetailNotifierProvider.notifier).loadTrip(widget.tripId);
     });
   }
 
   Future<void> _refresh() async {
     await ref.read(itineraryNotifierProvider.notifier).loadItinerary(widget.tripId);
+    await ref.read(tripDetailNotifierProvider.notifier).loadTrip(widget.tripId);
+  }
+
+  void _showShareSheet() {
+    final trip = ref.read(tripDetailNotifierProvider);
+    final shareCode = trip?.shareCode ?? 'NO-CODE';
+    final hasShareCode = shareCode.isNotEmpty && shareCode != 'NO-CODE';
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: hasShareCode ? const Color(0xFF5b4eff).withValues(alpha: 0.1) : Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.share,
+                size: 48,
+                color: hasShareCode ? const Color(0xFF5b4eff) : Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Bagikan Kode Trip',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              hasShareCode
+                  ? 'Bagikan kode ini untuk mengundang teman'
+                  : 'Share code akan di-generate saat trip dibuat',
+              style: TextStyle(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            if (hasShareCode) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF5b4eff).withValues(alpha: 0.3)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF5b4eff).withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      shareCode,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                        letterSpacing: 6,
+                        color: Color(0xFF5b4eff),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: const Icon(Icons.copy, color: Color(0xFF5b4eff)),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: shareCode));
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(
+                            content: Text('Kode berhasil disalin!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      },
+                      tooltip: 'Salin Kode',
+                    ),
+                  ],
+                ),
+              ),
+            ] else ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.grey[600]),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Kode belum tersedia',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF5b4eff),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Tutup'),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMembersSheet() {
+    final trip = ref.watch(tripDetailNotifierProvider);
+    final members = trip?.members ?? [];
+    final owner = trip?.owner;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.8,
+        expand: false,
+        builder: (_, scrollController) => Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5b4eff).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.group, color: Color(0xFF5b4eff)),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Member Trip',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5b4eff),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${members.length + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    // Owner
+                    if (owner != null) ...[
+                      _buildMemberTile(
+                        name: owner.name ?? 'Owner',
+                        role: 'owner',
+                        isOwner: true,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    // Members
+                    ...members.map((m) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: _buildMemberTile(
+                        name: m.name ?? 'Unknown',
+                        email: m.email,
+                        role: m.role ?? 'member',
+                        avatar: m.avatar,
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF5b4eff),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Tutup'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMemberTile({
+    required String name,
+    String? email,
+    required String role,
+    String? avatar,
+    bool isOwner = false,
+  }) {
+    final isOwnerRole = role == 'owner';
+    final color = isOwnerRole ? const Color(0xFF5b4eff) : Colors.grey;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: color.withValues(alpha: 0.2),
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                if (email != null && email.isNotEmpty)
+                  Text(
+                    email,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: isOwnerRole ? const Color(0xFF5b4eff).withValues(alpha: 0.1) : Colors.grey[100],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              isOwnerRole ? 'Owner' : role.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: isOwnerRole ? const Color(0xFF5b4eff) : Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showCompleteSheet(int activityId) {
@@ -57,7 +392,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
             activityId: activityId,
             actualCost: cost,
           );
-          // Show enhanced progress snackbar after completion
           _showProgressSnackbar(
             activityTitle: activity!.title ?? 'Kegiatan',
             isCompleted: true,
@@ -106,7 +440,6 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     final data = ref.read(itineraryNotifierProvider);
     if (data == null) return;
 
-    // Calculate current stats
     double totalActual = 0;
     int completedCount = 0;
     int totalCount = 0;
@@ -390,7 +723,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
 
     if (data == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Itinerary')),
+        appBar: AppBar(title: Text(widget.tripTitle ?? 'Itinerary')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -398,20 +731,12 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
     // Calculate statistics
     double totalEstimated = 0;
     double totalActual = 0;
-    int completedCount = 0;
-    int cancelledCount = 0;
-    int totalCount = 0;
 
     for (final day in data.days) {
       for (final a in day.activities) {
-        totalCount++;
         if (a.isCompleted) {
-          completedCount++;
           totalEstimated += (a.estimatedCost ?? 0).toDouble();
           totalActual += (a.actualCost ?? 0).toDouble();
-        } else if (a.isSkipped) {
-          cancelledCount++;
-          totalEstimated += (a.estimatedCost ?? 0).toDouble();
         } else {
           totalEstimated += (a.estimatedCost ?? 0).toDouble();
         }
@@ -420,25 +745,23 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
 
     final planBudget = (widget.planBudget ?? 0).toDouble();
     final remainingFromPlan = planBudget - totalActual;
-    final percentage = totalEstimated > 0
-        ? (totalActual / totalEstimated * 100).clamp(0.0, 200.0)
-        : 0.0;
+    final percentageUsed = planBudget > 0 ? (totalActual / planBudget * 100).clamp(0.0, 100.0) : 0.0;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Itinerary'),
+        title: Text(widget.tripTitle ?? 'Itinerary'),
         actions: [
+          // Share Icon
           IconButton(
-            icon: const Icon(Icons.pie_chart),
-            onPressed: () => context.push('/trips/${widget.tripId}/dashboard?budget=${widget.planBudget ?? 0}'),
-            tooltip: 'Dashboard',
-            color: Theme.of(context).colorScheme.primary,
+            icon: const Icon(Icons.share),
+            onPressed: _showShareSheet,
+            tooltip: 'Bagikan Trip',
           ),
+          // Members Icon
           IconButton(
-            icon: const Icon(Icons.flash_on),
-            onPressed: _showSuddenExpenseSheet,
-            tooltip: 'Pengeluaran Mendadak',
-            color: Colors.orange,
+            icon: const Icon(Icons.group),
+            onPressed: _showMembersSheet,
+            tooltip: 'Members',
           ),
         ],
       ),
@@ -446,93 +769,214 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         onRefresh: _refresh,
         child: ListView(
           children: [
-            // Summary Card
+            // Quick Action Icons
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // Dashboard Button (Purple)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5b4eff),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF5b4eff).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => context.push('/trips/${widget.tripId}/dashboard?budget=${widget.planBudget ?? 0}'),
+                        child: const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Icon(Icons.pie_chart, color: Colors.white, size: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Lightning/Sudden Expense Button (Orange)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFf59e0b),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFf59e0b).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: _showSuddenExpenseSheet,
+                        child: const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Icon(Icons.flash_on, color: Colors.white, size: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Budget Summary Card (Purple Gradient)
             Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                  ],
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7c3aed), Color(0xFF5b4eff)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF5b4eff).withValues(alpha: 0.4),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.account_balance_wallet, color: Colors.white, size: 28),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.account_balance_wallet, color: Color(0xFFfcd34d), size: 28),
+                      ),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Ringkasan Trip',
-                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '$completedCount/$totalCount kegiatan selesai • $cancelledCount dibatalkan',
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
-                            ),
-                          ],
+                      const Text(
+                        'Ringkasan Budget',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20),
+
+                  // Budget Details
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildBudgetLabel('Plan Budget'),
+                      Text(
+                        'Rp ${_formatCurrency(planBudget)}',
+                        style: const TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildBudgetLabel('Estimasi'),
+                      Text(
+                        'Rp ${_formatCurrency(totalEstimated)}',
+                        style: const TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Realita',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Rp ${_formatCurrency(totalActual)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 16),
 
-                  // Plan Budget vs Actual
-                  if (planBudget > 0) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatItem('Plan Budget', 'Rp ${_formatCurrency(planBudget)}'),
-                        _buildStatItem('Realita', 'Rp ${_formatCurrency(totalActual)}'),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      remainingFromPlan >= 0
-                          ? 'Sisa budget: Rp ${_formatCurrency(remainingFromPlan)}'
-                          : 'Lebih dari budget: Rp ${_formatCurrency(remainingFromPlan.abs())}',
-                      style: TextStyle(
-                        color: remainingFromPlan >= 0 ? Colors.green.shade100 : Colors.red.shade200,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                  // Progress Bar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: (percentageUsed / 100).clamp(0.0, 1.0),
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      valueColor: AlwaysStoppedAnimation(
+                        remainingFromPlan >= 0 ? const Color(0xFF4ade80) : Colors.red.shade300,
                       ),
+                      minHeight: 8,
                     ),
-                    const SizedBox(height: 12),
-                  ],
+                  ),
+                  const SizedBox(height: 12),
 
-                  // Progress
-                  if (!data.days.isEmpty && totalCount > 0) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: (completedCount / totalCount).clamp(0.0, 1.0),
-                        backgroundColor: Colors.white30,
-                        valueColor: AlwaysStoppedAnimation(Colors.green),
-                        minHeight: 8,
+                  // Remaining Badge
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${percentageUsed.toStringAsFixed(0)}% terpakai',
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${completedCount}/$totalCount kegiatan selesai (${((completedCount / totalCount) * 100).toStringAsFixed(0)}%)',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
-                    ),
-                  ],
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: remainingFromPlan >= 0 ? const Color(0xFF4ade80) : Colors.red.shade300,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (remainingFromPlan >= 0 ? const Color(0xFF4ade80) : Colors.red.shade300).withValues(alpha: 0.5),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          remainingFromPlan >= 0
+                              ? 'Sisa: Rp ${_formatCurrency(remainingFromPlan)}'
+                              : 'Lebih: Rp ${_formatCurrency(remainingFromPlan.abs())}',
+                          style: TextStyle(
+                            color: remainingFromPlan >= 0 ? Colors.green.shade900 : Colors.red.shade900,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
 
-            // Days
+            // Days List
             if (data.days.isEmpty)
               Center(
                 child: Padding(
@@ -546,6 +990,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                       Text(
                         'Tekan tombol + di bawah untuk menambah hari perjalanan',
                         style: TextStyle(color: Colors.grey[500]),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -559,20 +1004,58 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showQuickActionMenu,
-        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF5b4eff),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
+    );
+  }
+
+  Widget _buildBudgetLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(color: Colors.white70, fontSize: 14),
     );
   }
 
   void _showQuickActionMenu() {
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Tambah',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             ListTile(
-              leading: const CircleAvatar(backgroundColor: Colors.blue, child: Icon(Icons.calendar_today, color: Colors.white)),
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF5b4eff).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.calendar_today, color: Color(0xFF5b4eff)),
+              ),
               title: const Text('Tambah Hari'),
               subtitle: const Text('Tambahkan hari perjalanan baru'),
               onTap: () {
@@ -581,7 +1064,14 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
               },
             ),
             ListTile(
-              leading: const CircleAvatar(backgroundColor: Colors.orange, child: Icon(Icons.flash_on, color: Colors.white)),
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFf59e0b).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.flash_on, color: Color(0xFFf59e0b)),
+              ),
               title: const Text('Pengeluaran Mendadak'),
               subtitle: const Text('Catat pengeluaran di luar rencana'),
               onTap: () {
@@ -589,26 +1079,14 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 _showSuddenExpenseSheet();
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
   Widget _buildDayCard(TripDayModel day) {
-    double dayEstimated = 0;
     double dayActual = 0;
     int completedInDay = 0;
     int totalInDay = day.activities.length;
@@ -618,103 +1096,299 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         completedInDay++;
         dayActual += (a.actualCost ?? 0).toDouble();
       }
-      dayEstimated += (a.estimatedCost ?? 0).toDouble();
     }
 
-    return Card(
+    final isDayCompleted = completedInDay == totalInDay && totalInDay > 0;
+    final dateFormatted = _formatDate(day.date);
+
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ExpansionTile(
-        leading: CircleAvatar(
-          backgroundColor: completedInDay == totalInDay && totalInDay > 0 ? Colors.green : Theme.of(context).colorScheme.primary,
-          child: completedInDay == totalInDay && totalInDay > 0
-              ? const Icon(Icons.check, color: Colors.white)
-              : Text('${day.dayNumber}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        ),
-        title: Text('Hari ${day.dayNumber}', style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(day.date ?? 'Tanggal tidak tersedia'),
-            if (totalInDay > 0)
-              Text(
-                '$completedInDay/$totalInDay selesai • Rp ${_formatCurrency(dayActual)}',
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
-        ),
-        initiallyExpanded: true,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
         children: [
+          // Day Header
+          InkWell(
+            onTap: () {
+              // Toggle expansion if needed
+            },
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade100),
+                ),
+              ),
+              child: Row(
+                children: [
+                  // Day Circle
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: isDayCompleted
+                          ? const Color(0xFF4ade80)
+                          : const Color(0xFF5b4eff),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: isDayCompleted
+                          ? const Icon(Icons.check, color: Colors.white, size: 20)
+                          : Text(
+                              '${day.dayNumber}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Day Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hari ${day.dayNumber}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color(0xFF1F2937),
+                          ),
+                        ),
+                        Text(
+                          dateFormatted,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Right Info
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isDayCompleted
+                              ? const Color(0xFF4ade80).withValues(alpha: 0.1)
+                              : const Color(0xFF5b4eff).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '$completedInDay/$totalInDay Selesai',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: isDayCompleted
+                                ? const Color(0xFF16a34a)
+                                : const Color(0xFF5b4eff),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Rp ${_formatCurrency(dayActual)}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1F2937),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Activities List
           if (day.activities.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Belum ada kegiatan di hari ini'),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Belum ada kegiatan di hari ini',
+                style: TextStyle(color: Colors.grey[500]),
+              ),
             )
           else
-            ...day.activities.map<Widget>((a) => _buildActivityTile(a)),
-          ListTile(
-            leading: const CircleAvatar(radius: 16, backgroundColor: Colors.blue, child: Icon(Icons.add, size: 16, color: Colors.white)),
-            title: const Text('Tambah Kegiatan', style: TextStyle(color: Colors.blue)),
+            ...day.activities.map((a) => _buildActivityItem(a)),
+
+          // Add Activity Button
+          InkWell(
             onTap: () => _navigateToAddActivity(day.id),
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.grey.shade100),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, size: 18, color: Colors.blue[600]),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Tambah Kegiatan',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActivityTile(ActivityModel a) {
+  Widget _buildActivityItem(ActivityModel a) {
     Color statusColor;
     IconData statusIcon;
-    String statusText;
+    String nominal;
 
     if (a.isCompleted) {
-      statusColor = Colors.green;
+      statusColor = const Color(0xFF4ade80);
       statusIcon = Icons.check_circle;
-      statusText = 'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}';
+      nominal = 'Rp ${_formatCurrency((a.actualCost ?? 0).toDouble())}';
     } else if (a.isSkipped) {
       statusColor = Colors.red;
       statusIcon = Icons.cancel;
-      statusText = 'Dibatalkan';
+      nominal = 'Dibatalkan';
     } else {
-      statusColor = Colors.grey;
-      statusIcon = Icons.schedule;
-      statusText = 'Rp ${_formatCurrency((a.estimatedCost ?? 0).toDouble())}';
+      statusColor = Colors.grey[400]!;
+      statusIcon = Icons.circle_outlined;
+      nominal = 'Rp ${_formatCurrency((a.estimatedCost ?? 0).toDouble())}';
     }
 
-    return ListTile(
-      leading: CircleAvatar(
-        radius: 16,
-        backgroundColor: statusColor,
-        child: Icon(statusIcon, size: 16, color: Colors.white),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade100),
+        ),
       ),
-      title: Text(a.title ?? 'Tanpa judul'),
-      subtitle: Text(statusText, style: TextStyle(color: statusColor, fontSize: 12)),
-      trailing: a.isPending
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
+      child: Row(
+        children: [
+          // Status Icon
+          Icon(statusIcon, color: statusColor, size: 20),
+          const SizedBox(width: 12),
+          // Activity Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.check, color: Colors.green),
-                  onPressed: () => _showCompleteSheet(a.id),
-                  tooltip: 'Selesai',
+                Text(
+                  a.title ?? 'Tanpa judul',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: a.isSkipped ? Colors.grey : const Color(0xFF1F2937),
+                    decoration: a.isSkipped ? TextDecoration.lineThrough : null,
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Colors.red),
-                  onPressed: () => _skipActivity(a.id),
-                  tooltip: 'Batalkan',
+                const SizedBox(height: 2),
+                Text(
+                  a.category ?? 'Tanpa kategori',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
                 ),
               ],
-            )
-          : null,
-      onTap: a.isPending ? () => _showCompleteSheet(a.id) : null,
+            ),
+          ),
+          // Nominal
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                nominal,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: a.isSkipped ? Colors.grey : const Color(0xFF1F2937),
+                ),
+              ),
+              if (a.isPending) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildActionButton(
+                      icon: Icons.check,
+                      color: const Color(0xFF4ade80),
+                      onTap: () => _showCompleteSheet(a.id),
+                    ),
+                    const SizedBox(width: 4),
+                    _buildActionButton(
+                      icon: Icons.close,
+                      color: Colors.red,
+                      onTap: () => _skipActivity(a.id),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  String _formatCurrency(double amount) {
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}jt';
-    } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}rb';
+  Widget _buildActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Icon(icon, size: 14, color: color),
+      ),
+    );
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return 'Tanggal tidak tersedia';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('dd MMM yyyy', 'id_ID').format(date);
+    } catch (_) {
+      return dateStr;
     }
-    return amount.toStringAsFixed(0);
+  }
+
+  String _formatCurrency(double amount) {
+    final formatter = NumberFormat.currency(symbol: '', decimalDigits: 0);
+    return formatter.format(amount).replaceAll(',', '.');
   }
 }

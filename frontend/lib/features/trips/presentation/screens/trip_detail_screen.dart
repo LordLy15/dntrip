@@ -159,7 +159,9 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () => context.push('/trips/${trip.id}/itinerary'),
+                  onPressed: () => context.push(
+                    '/trips/${trip.id}/itinerary?budget=${trip.planBudget ?? 0}&title=${Uri.encodeComponent(trip.title ?? 'Itinerary')}&shareCode=${Uri.encodeComponent(trip.shareCode ?? '')}',
+                  ),
                   icon: const Icon(Icons.calendar_month, size: 24),
                   label: const Text(
                     'LIHAT ITINERARY & TAMBAH KEGIATAN',

@@ -36,7 +36,14 @@ GoRouter appRouter(AppRouterRef ref) {
           final id = int.parse(state.pathParameters['id']!);
           final budgetStr = state.uri.queryParameters['budget'];
           final budget = budgetStr != null ? int.tryParse(budgetStr) ?? 0 : 0;
-          return ItineraryScreen(tripId: id, planBudget: budget);
+          final title = state.uri.queryParameters['title'];
+          final shareCode = state.uri.queryParameters['shareCode'];
+          return ItineraryScreen(
+            tripId: id,
+            planBudget: budget,
+            tripTitle: title,
+            shareCode: shareCode,
+          );
         },
       ),
       GoRoute(
