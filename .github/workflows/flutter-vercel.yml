@@ -4,8 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'frontend/**'
       - 'vercel-deploy/frontend/**'
+      - 'frontend/lib/**'
+      - 'frontend/pubspec.yaml'
 
 jobs:
   build-and-deploy:
@@ -19,15 +20,21 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Copy Flutter source
+        run: |
+          cp -r frontend/lib vercel-deploy/frontend/
+          cp frontend/pubspec.yaml vercel-deploy/frontend/
+          cp frontend/pubspec.lock vercel-deploy/frontend/
+
       - name: Build Flutter Web
         run: |
-          cd frontend
+          cd vercel-deploy/frontend
           flutter pub get
           flutter build web --release
 
       - name: Deploy to Vercel
         run: |
-          cd frontend/build/web
+          cd vercel-deploy/frontend/build/web
           npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: team_bMzA2HVhS0WpQaotYl30Sn8Q
