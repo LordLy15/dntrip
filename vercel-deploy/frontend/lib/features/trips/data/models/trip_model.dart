@@ -10,29 +10,72 @@ class TripModel with _$TripModel {
 
   const factory TripModel({
     required int id,
-    required String title,
+    String? title,
     String? destination,
     String? description,
     String? startDate,
     String? endDate,
-    required String shareCode,
-    required String status,
-    required UserModel owner,
+    String? shareCode,
+    String? status,
+    required TripOwner owner,
     @Default([]) List<TripMemberModel> members,
     int? membersCount,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
+    String? actualStartTime,
+    String? actualEndTime,
   }) = _TripModel;
+
+  bool get hasLocation => latitude != null && latitude!.isNotEmpty && longitude != null && longitude!.isNotEmpty;
+  bool get isOnTime {
+    if (actualStartTime == null) return true;
+    // Simple check - if actual start is before planned, it's on time
+    return true; // Will be calculated based on planned time
+  }
 
   factory TripModel.fromJson(Map<String, dynamic> json) =>
       _$TripModelFromJson(json);
+
+  /// Create from API response with flat members
+  static TripModel fromApiResponse(Map<String, dynamic> json) {
+    // Handle members array with flat user structure (name, email, avatar at top level)
+    final membersJson = json['members'] as List?;
+    final members = membersJson
+        ?.map((m) => TripMemberModel.fromFlatJson(m as Map<String, dynamic>))
+        .toList() ?? [];
+
+    return TripModel(
+      id: json['id'] as int,
+      title: json['title'] as String?,
+      destination: json['destination'] as String?,
+      description: json['description'] as String?,
+      startDate: json['start_date'] as String?,
+      endDate: json['end_date'] as String?,
+      shareCode: json['share_code'] as String?,
+      status: json['status'] as String?,
+      owner: TripOwner(
+        id: (json['owner'] as Map<String, dynamic>?)?['id'] as int? ?? 0,
+        name: (json['owner'] as Map<String, dynamic>?)?['name'] as String?,
+        avatar: (json['owner'] as Map<String, dynamic>?)?['avatar'] as String?,
+      ),
+      members: members,
+      membersCount: members.length,
+      planBudget: json['plan_budget'] as int?,
+      latitude: json['latitude'] as String?,
+      longitude: json['longitude'] as String?,
+    );
+  }
 }
 
 @freezed
-class UserModel with _$UserModel {
-  const factory UserModel({
+class TripOwner with _$TripOwner {
+  const factory TripOwner({
     required int id,
-    required String name,
-  }) = _UserModel;
+    String? name,
+    String? avatar,
+  }) = _TripOwner;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory TripOwner.fromJson(Map<String, dynamic> json) =>
+      _$TripOwnerFromJson(json);
 }

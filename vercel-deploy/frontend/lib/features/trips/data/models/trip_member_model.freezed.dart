@@ -21,9 +21,10 @@ TripMemberModel _$TripMemberModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TripMemberModel {
   int get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
-  String get role => throw _privateConstructorUsedError;
+  String? get avatar => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,7 +38,8 @@ abstract class $TripMemberModelCopyWith<$Res> {
           TripMemberModel value, $Res Function(TripMemberModel) then) =
       _$TripMemberModelCopyWithImpl<$Res, TripMemberModel>;
   @useResult
-  $Res call({int id, String name, String? email, String role});
+  $Res call(
+      {int id, String? name, String? email, String? avatar, String? role});
 }
 
 /// @nodoc
@@ -54,27 +56,32 @@ class _$TripMemberModelCopyWithImpl<$Res, $Val extends TripMemberModel>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
+    Object? name = freezed,
     Object? email = freezed,
-    Object? role = null,
+    Object? avatar = freezed,
+    Object? role = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String?,
-      role: null == role
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ) as $Val);
   }
 }
@@ -87,7 +94,8 @@ abstract class _$$TripMemberModelImplCopyWith<$Res>
       __$$TripMemberModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, String? email, String role});
+  $Res call(
+      {int id, String? name, String? email, String? avatar, String? role});
 }
 
 /// @nodoc
@@ -102,27 +110,32 @@ class __$$TripMemberModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
+    Object? name = freezed,
     Object? email = freezed,
-    Object? role = null,
+    Object? avatar = freezed,
+    Object? role = freezed,
   }) {
     return _then(_$TripMemberModelImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String?,
-      role: null == role
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -131,7 +144,7 @@ class __$$TripMemberModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$TripMemberModelImpl extends _TripMemberModel {
   const _$TripMemberModelImpl(
-      {required this.id, required this.name, this.email, required this.role})
+      {required this.id, this.name, this.email, this.avatar, this.role})
       : super._();
 
   factory _$TripMemberModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -140,15 +153,17 @@ class _$TripMemberModelImpl extends _TripMemberModel {
   @override
   final int id;
   @override
-  final String name;
+  final String? name;
   @override
   final String? email;
   @override
-  final String role;
+  final String? avatar;
+  @override
+  final String? role;
 
   @override
   String toString() {
-    return 'TripMemberModel(id: $id, name: $name, email: $email, role: $role)';
+    return 'TripMemberModel(id: $id, name: $name, email: $email, avatar: $avatar, role: $role)';
   }
 
   @override
@@ -159,12 +174,13 @@ class _$TripMemberModelImpl extends _TripMemberModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar) &&
             (identical(other.role, role) || other.role == role));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, email, role);
+  int get hashCode => Object.hash(runtimeType, id, name, email, avatar, role);
 
   @JsonKey(ignore: true)
   @override
@@ -184,9 +200,10 @@ class _$TripMemberModelImpl extends _TripMemberModel {
 abstract class _TripMemberModel extends TripMemberModel {
   const factory _TripMemberModel(
       {required final int id,
-      required final String name,
+      final String? name,
       final String? email,
-      required final String role}) = _$TripMemberModelImpl;
+      final String? avatar,
+      final String? role}) = _$TripMemberModelImpl;
   const _TripMemberModel._() : super._();
 
   factory _TripMemberModel.fromJson(Map<String, dynamic> json) =
@@ -195,11 +212,13 @@ abstract class _TripMemberModel extends TripMemberModel {
   @override
   int get id;
   @override
-  String get name;
+  String? get name;
   @override
   String? get email;
   @override
-  String get role;
+  String? get avatar;
+  @override
+  String? get role;
   @override
   @JsonKey(ignore: true)
   _$$TripMemberModelImplCopyWith<_$TripMemberModelImpl> get copyWith =>

@@ -38,7 +38,7 @@ final tripRepositoryProvider = AutoDisposeProvider<TripRepository>.internal(
 );
 
 typedef TripRepositoryRef = AutoDisposeProviderRef<TripRepository>;
-String _$tripsNotifierHash() => r'32df6448bb400ad82962707bb4bb0d05b920891f';
+String _$tripsNotifierHash() => r'2793ba8e65569cf05320e2426d08107048beec8f';
 
 /// See also [TripsNotifier].
 @ProviderFor(TripsNotifier)
@@ -55,7 +55,7 @@ final tripsNotifierProvider =
 
 typedef _$TripsNotifier = AutoDisposeNotifier<TripsState>;
 String _$tripDetailNotifierHash() =>
-    r'6b3a48e091914f4b591a5569804b4a376784c5a1';
+    r'67bce79a256b23a3283b69771b5c548d751686b4';
 
 /// See also [TripDetailNotifier].
 @ProviderFor(TripDetailNotifier)
@@ -71,7 +71,7 @@ final tripDetailNotifierProvider =
 );
 
 typedef _$TripDetailNotifier = AutoDisposeNotifier<TripModel?>;
-String _$membersNotifierHash() => r'2f4928a276caf19fbfaaafbe3a10a112eb8a2b8a';
+String _$membersNotifierHash() => r'b649eb2fa60c566d4ef573791da8baba0b32f38e';
 
 /// See also [MembersNotifier].
 @ProviderFor(MembersNotifier)

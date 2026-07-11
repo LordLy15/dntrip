@@ -10,9 +10,10 @@ _$TripMemberModelImpl _$$TripMemberModelImplFromJson(
         Map<String, dynamic> json) =>
     _$TripMemberModelImpl(
       id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
+      name: json['name'] as String?,
       email: json['email'] as String?,
-      role: json['role'] as String,
+      avatar: json['avatar'] as String?,
+      role: json['role'] as String?,
     );
 
 Map<String, dynamic> _$$TripMemberModelImplToJson(
@@ -21,5 +22,6 @@ Map<String, dynamic> _$$TripMemberModelImplToJson(
       'id': instance.id,
       'name': instance.name,
       'email': instance.email,
+      'avatar': instance.avatar,
       'role': instance.role,
     };

@@ -66,7 +66,7 @@ final authRepositoryProvider = AutoDisposeProvider<AuthRepository>.internal(
 );
 
 typedef AuthRepositoryRef = AutoDisposeProviderRef<AuthRepository>;
-String _$authNotifierHash() => r'8fcbdbbd3924412af219d2060e422a8fd12a4672';
+String _$authNotifierHash() => r'cf8a4a775c41e2af8d6d3cd3d7d5c61787bd51e6';
 
 /// See also [AuthNotifier].
 @ProviderFor(AuthNotifier)

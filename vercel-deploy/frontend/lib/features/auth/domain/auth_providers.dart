@@ -84,6 +84,20 @@ class AuthNotifier extends _$AuthNotifier {
     await repository.logout();
     ref.invalidateSelf();
   }
+
+  Future<void> updateProfile({
+    String? name,
+    String? email,
+    String? avatarBase64,
+  }) async {
+    final repository = ref.read(authRepositoryProvider);
+    final user = await repository.updateProfile(
+      name: name,
+      email: email,
+      avatarBase64: avatarBase64,
+    );
+    state = AsyncData(Authenticated(user));
+  }
 }
 
 // Login state

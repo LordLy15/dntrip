@@ -16,6 +16,9 @@ class TripRepository {
     String? description,
     required String startDate,
     required String endDate,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
   }) =>
       _remoteDatasource.createTrip(
         title: title,
@@ -23,6 +26,9 @@ class TripRepository {
         description: description,
         startDate: startDate,
         endDate: endDate,
+        planBudget: planBudget,
+        latitude: latitude,
+        longitude: longitude,
       );
 
   Future<TripModel> updateTrip({
@@ -33,6 +39,9 @@ class TripRepository {
     String? startDate,
     String? endDate,
     String? status,
+    int? planBudget,
+    String? latitude,
+    String? longitude,
   }) =>
       _remoteDatasource.updateTrip(
         id: id,
@@ -42,6 +51,9 @@ class TripRepository {
         startDate: startDate,
         endDate: endDate,
         status: status,
+        planBudget: planBudget,
+        latitude: latitude,
+        longitude: longitude,
       );
 
   Future<void> deleteTrip(int id) => _remoteDatasource.deleteTrip(id);

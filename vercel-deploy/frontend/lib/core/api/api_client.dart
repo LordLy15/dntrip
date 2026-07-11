@@ -8,6 +8,9 @@ class ApiClient {
   late final Dio _dio;
   final HiveStorage _storage;
 
+  // Expose Dio instance
+  Dio get dio => _dio;
+
   ApiClient(this._storage) {
     _dio = Dio(BaseOptions(
       baseUrl: AppConstants.baseUrl,
@@ -45,6 +48,30 @@ class ApiClient {
   }) async {
     try {
       final response = await _dio.post(path, data: data);
+      return _handleResponse(response);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> patch(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final response = await _dio.patch(path, data: data);
+      return _handleResponse(response);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> put(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final response = await _dio.put(path, data: data);
       return _handleResponse(response);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);

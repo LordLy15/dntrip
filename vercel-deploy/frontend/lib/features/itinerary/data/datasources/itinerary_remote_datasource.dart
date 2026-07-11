@@ -135,4 +135,11 @@ class ItineraryRemoteDatasource {
   Future<void> deleteActivity(int tripId, int activityId) async {
     await _apiClient.post('/trips/$tripId/activities/$activityId', data: {'_method': 'DELETE'});
   }
+
+  Future<void> skipActivity(int tripId, int activityId) async {
+    await _apiClient.post(
+      '/trips/$tripId/activities/$activityId',
+      data: {'status': 'skipped'},
+    );
+  }
 }
