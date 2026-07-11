@@ -1,0 +1,55 @@
+name: Deploy Frontend to Vercel and Backend to Railway
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # Deploy Frontend to Vercel
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Sync Flutter source
+        run: |
+          cp -r frontend/lib vercel-deploy/frontend/
+          cp frontend/pubspec.yaml vercel-deploy/frontend/
+          cp frontend/pubspec.lock vercel-deploy/frontend/
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Build Flutter Web
+        run: |
+          cd vercel-deploy/frontend
+          flutter pub get
+          flutter build web --release
+
+      - name: Deploy to Vercel
+        run: |
+          cd vercel-deploy/frontend/build/web
+          npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_bMzA2HVhS0WpQaotYl30Sn8Q
+          VERCEL_PROJECT_ID: prj_FgfLKfwUdf6ElNLhDsc2Z6LpNZRB
+
+  # Deploy Backend to Railway
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        uses: railway-deploy-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
+          project: DNTrip
+          service: dntrip-backend
+          root: backend
