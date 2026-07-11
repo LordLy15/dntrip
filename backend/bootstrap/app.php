@@ -3,15 +3,18 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Middleware\HandleCors;
 
 $app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
+        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
+        apiPrefix: 'api',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(HandleCors::class);
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -20,15 +23,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
                 $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
                 return response()->json([
                     'status' => 'error',
-                    'message' => $e->getMessage(),
+                    'message' => config('app.debug') ? $e->getMessage() : 'Server error',
                 ], $status);
             }
         });
     })->create();
-
-// Vercel: Set URL for proper routing
-if (getenv('VERCEL_URL')) {
-    $app['config']->set('app.url', 'https://' . getenv('VERCEL_URL'));
-}
 
 return $app;
