@@ -1,20 +1,14 @@
 {
   "framework": null,
   "functions": {
-    "api/index.php": {
-      "runtime": "vercel-php@0.6.1",
-      "memory": 256,
-      "maxDuration": 10
+    "api/**/*.php": {
+      "runtime": "vercel-php@0.6.1"
     }
   },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.php"
-    },
-    {
-      "src": "/up",
-      "dest": "/api/index.php"
+      "dest": "/api/$1"
     }
   ]
 }
